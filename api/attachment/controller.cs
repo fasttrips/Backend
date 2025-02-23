@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace Trasgo.Server.Controllers
 {
@@ -65,10 +67,6 @@ namespace Trasgo.Server.Controllers
             }
         }
 
-
-
-
-
         [Authorize]
         [HttpPost]
         [RequestSizeLimit(300 * 1024 * 1024)] // 300 MB
@@ -77,39 +75,50 @@ namespace Trasgo.Server.Controllers
         {
             try
             {
-                string accessToken = HttpContext.Request.Headers["Authorization"];
-                string idUser = await _ConvertJwt.ConvertString(accessToken);
-
                 if (file == null || file.Length == 0)
                 {
                     throw new CustomException(400, "Message", "File not found");
                 }
 
-                // Define max file size: 300 MB
+                // Batasi ukuran file
                 const long maxFileSize = 300 * 1024 * 1024; // 300 MB
-
-                // Validate file size
                 if (file.Length > maxFileSize)
                 {
                     throw new CustomException(400, "Message", "File size must not exceed 300 MB.");
                 }
 
-                // Initialize GridFSBucket
+                // Mengecilkan ukuran gambar jika file adalah gambar
+                byte[] compressedImage;
+                using (var image = Image.Load(file.OpenReadStream()))
+                {
+                    // Mengurangi kualitas tetapi tetap menjaga resolusi
+                    var encoder = new JpegEncoder
+                    {
+                        Quality = 20 // Sesuaikan dengan target ukuran (0-100)
+                    };
+
+                    using (var ms = new MemoryStream())
+                    {
+                        image.Save(ms, encoder);
+                        compressedImage = ms.ToArray();
+                    }
+                }
+
+                // Simpan ke GridFS
                 var client = new MongoClient(_conf.GetConnectionString("ConnectionURI"));
                 var database = client.GetDatabase("Trasgo");
                 var gridFSBucket = new GridFSBucket(database);
 
-                // Upload file to GridFS
                 ObjectId fileId;
-                using (var stream = file.OpenReadStream())
+                using (var stream = new MemoryStream(compressedImage))
                 {
                     var options = new GridFSUploadOptions
                     {
                         Metadata = new BsonDocument
                 {
                     { "FileName", file.FileName },
-                    { "ContentType", file.ContentType },
-                    { "UploadedBy", idUser },
+                    { "ContentType", "image/jpeg" },
+                    { "UploadedBy", "admin" },
                     { "UploadedAt", DateTime.UtcNow }
                 }
                     };
@@ -139,7 +148,6 @@ namespace Trasgo.Server.Controllers
     }
 }
 
-// MongoDB model
 public class MediaFile
 {
     public string? Id { get; set; } // Unique file ID

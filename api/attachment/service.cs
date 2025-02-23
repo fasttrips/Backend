@@ -31,43 +31,5 @@ namespace RepositoryPattern.Services.AttachmentService
                 throw new CustomException(400, "Error", ex.Message); ;
             }
         }
-
-        // public async Task<(string FileName, string Url)> Upload(IFormFile file, string fileName, string idUser)
-        // {
-        //     var bucket = bucketName;
-        //     var folderName = "uploads";
-        //     var fileSize = file.Length;
-
-        //     // Baca file sebagai stream
-        //     using var memoryStream = new MemoryStream();
-        //     await file.CopyToAsync(memoryStream);
-        //     memoryStream.Position = 0;
-
-        //     // Tentukan metadata file
-        //     var contentType = file.ContentType;
-
-        //     // Unggah file ke Google Cloud Storage
-        //     var gcsFile = storageClient.UploadObject(bucket, fileName, contentType, memoryStream);
-
-        //     // URL akses file
-        //     var url = $"https://storage.googleapis.com/{bucket}/{fileName}";
-        //     var uuid = Guid.NewGuid().ToString();
-
-        //     var otp = new Attachments
-        //     {
-        //         Id = uuid,
-        //         fileName = fileName,
-        //         type = file.ContentType,
-        //         path = url,
-        //         UserId = idUser,
-        //         size = fileSize,
-        //         CreatedAt = DateTime.Now,
-        //     };
-
-        //     // Simpan OTP ke database
-        //     await AttachmentLink.InsertOneAsync(otp);
-
-        //     return (gcsFile.Name, url);
-        // }
     }
 }
