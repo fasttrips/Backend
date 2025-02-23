@@ -70,43 +70,6 @@ namespace RepositoryPattern.Services.AuthService
             }
         }
 
-        public async Task<Object> LoginGoogleAsync([FromBody] string login)
-        {
-            try
-            {
-                var user = await dataUser.Find(u => u.Email == login).FirstOrDefaultAsync();
-                if (user == null)
-                {
-                    throw new CustomException(400, "Email", "Email tidak ditemukan");
-                }
-                // bool isPasswordCorrect = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
-                // if (!isPasswordCorrect)
-                // {
-                //     throw new CustomException(400, "Password", "Password Salah");
-                // }
-                if (user.IsActive == false)
-                {
-                    throw new CustomException(400, "Message", "Akun anda tidak perbolehkan akses");
-                }
-                if (user.IsVerification == false)
-                {
-                    throw new CustomException(400, "Message", "Akun anda belum aktif, silahkan aktifasi melalui link kami kirimkan di email anda");
-                }
-
-                var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-                var jwtService = new JwtService(configuration);
-                string userId = user.Id;
-                string token = jwtService.GenerateJwtToken(userId);
-                string idAsString = userId.ToString();
-                return new { code = 200, id = idAsString, accessToken = token };
-            }
-            catch (CustomException ex)
-            {
-
-                throw;
-            }
-        }
-
         public async Task<object> RegisterAsync([FromBody] RegisterDto data)
         {
             try
@@ -115,7 +78,12 @@ namespace RepositoryPattern.Services.AuthService
 
                 if (user != null)
                 {
-                    throw new CustomException(400, "Email", "Email Sudah digunakan");
+                    string usersId = user.Id;
+                    string roleId = user.Id.ToString();
+                    var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+                    var jwtServices = new JwtService(config);
+                    string tokens = jwtServices.GenerateJwtToken(usersId);
+                    return new { code = 200, id = roleId, accessToken = tokens };
                 }
 
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(data.Password);
@@ -138,19 +106,11 @@ namespace RepositoryPattern.Services.AuthService
 
                 await dataUser.InsertOneAsync(roleData);
                 string roleIdAsString = roleData.Id.ToString();
-
-                // var email = new EmailForm()
-                // {
-                //     Id = uuid,
-                //     Email = data.Email,
-                //     Subject = "Activation Trasgo",
-                //     Message = "Activation"
-                // };
                 var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
                 var jwtService = new JwtService(configuration);
                 string userId = roleData.Id;
                 string token = jwtService.GenerateJwtToken(userId);
-                // var sending = _emailService.SendEmailAsync(email);
+
                 return new { code = 200, id = roleIdAsString, accessToken = token };
             }
             catch (CustomException ex)

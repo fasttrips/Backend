@@ -2,6 +2,23 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Trasgo.Shared.Models
 {
+    public class Attachments : BaseModelUser
+    {
+        [BsonId]
+        public string? Id { get; set; }
+
+        [BsonElement("fileName")]
+        public string? fileName { get; set; }
+
+        [BsonElement("type")]
+        public string? type { get; set; }
+
+        [BsonElement("path")]
+        public string? path { get; set; }
+        [BsonElement("size")]
+        public long? size { get; set; }
+    }
+
     public class BaseModelUser
     {
         [BsonElement("CreatedAt")]

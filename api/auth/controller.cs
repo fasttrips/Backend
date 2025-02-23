@@ -24,44 +24,7 @@ namespace Trasgo.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("googleLogin")]
-        public async Task<object> LoginGoogleAsync([FromBody] LoginGoogleDto login)
-        {
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jsonToken = handler.ReadToken(login.Token) as JwtSecurityToken;
-                if (jsonToken != null)
-                {
-                    var payloadJson = jsonToken.Payload.SerializeToJson();
-                    var payload = JsonSerializer.Deserialize<JwtPayloads>(payloadJson);
-                    if (payload.Audience == "Trasgo-de")
-                    {
-                        var response = await _IAuthService.LoginGoogleAsync(payload.Email);
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        throw new CustomException(400, "Token", "Invalid Token");
-                    }
-                }
-                else
-                {
-                    throw new CustomException(400, "Token", "Invalid Token");
-                }
-
-            }
-            catch (CustomException ex)
-            {
-                int errorCode = ex.ErrorCode;
-                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
-                return _errorUtility.HandleError(errorCode, errorResponse);
-            }
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("googleRegister")]
+        [Route("googleSign")]
         public async Task<object> RegisterGoogleAsync([FromBody] RegisterGoogleDto login)
         {
             try
@@ -73,7 +36,7 @@ namespace Trasgo.Server.Controllers
                 {
                     var payloadJson = jsonToken.Payload.SerializeToJson();
                     var payload = JsonSerializer.Deserialize<JwtPayloads>(payloadJson);
-                    if (payload.Audience == "Trasgo-de")
+                    if (payload.Audience == "fastrip25")
                     {
                         var response = await _IAuthService.RegisterGoogleAsync(payloadJson, login);
                         return Ok(response);
@@ -88,42 +51,6 @@ namespace Trasgo.Server.Controllers
                     throw new CustomException(400, "Token", "Invalid Token");
                 }
 
-            }
-            catch (CustomException ex)
-            {
-                int errorCode = ex.ErrorCode;
-                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
-                return _errorUtility.HandleError(errorCode, errorResponse);
-            }
-        }
-
-        [HttpGet]
-        [Route("checkEmail/{email}")]
-        public async Task<object> CheckMail([FromRoute] string email)
-        {
-            try
-            {
-                var dataList = await _IAuthService.CheckMail(email);
-                return Ok(dataList);
-            }
-            catch (CustomException ex)
-            {
-                int errorCode = ex.ErrorCode;
-                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
-                return _errorUtility.HandleError(errorCode, errorResponse);
-            }
-        }
-
-        [HttpGet]
-        [Route("checkStatus")]
-        public async Task<object> CheckStatus()
-        {
-            try
-            {
-                string accessToken = HttpContext.Request.Headers["Authorization"];
-                string idUser = await _ConvertJwt.ConvertString(accessToken);
-                var dataList = await _IAuthService.CheckStatus(idUser);
-                return Ok(dataList);
             }
             catch (CustomException ex)
             {
