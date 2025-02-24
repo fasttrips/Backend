@@ -36,7 +36,7 @@ namespace Trasgo.Server.Controllers
                 {
                     var payloadJson = jsonToken.Payload.SerializeToJson();
                     var payload = JsonSerializer.Deserialize<JwtPayloads>(payloadJson);
-                    if (payload.Audience == "fastrip25")
+                    if (payload.Audience == "831730691096-hsuqs4noja9rc5r3c0sbj050q5st4pmq.apps.googleusercontent.com")
                     {
                         var response = await _IAuthService.RegisterGoogleAsync(payloadJson, login);
                         return Ok(response);

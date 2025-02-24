@@ -6,33 +6,35 @@ namespace Trasgo.Shared.Models
     {
         [BsonId]
         public string? Id {get; set;}
-
-        [BsonElement("Username")]
-        public string? Username {get; set;}
         
         [BsonElement("Email")]
         public string? Email {get; set;}
 
-        [BsonElement("Password")]
-        public string? Password {get; set;}
-
         [BsonElement("FullName")]
         public string? FullName {get; set;}
-        [BsonElement("PhoneNumber")]
-        public string? PhoneNumber {get; set;}
+
+        [BsonElement("Phone")]
+        public string? Phone {get; set;}
 
         [BsonElement("Image")]
         public string? Image {get; set;}
 
         [BsonElement("IdRole")]
         public string? IdRole {get; set;}
+
         [BsonElement("Pin")]
         public string? Pin {get; set;}
+
         [BsonElement("Otp")]
         public string? Otp {get; set;}
-        
-        [BsonElement("CodeMeeting")]
-        public string? CodeMeeting {get; set;}
-    
+
+        [BsonElement("Balance")]
+        public float? Balance {get; set;}
+
+        [BsonElement("Point")]
+        public float? Point {get; set;}
+
+        [BsonElement("Fcm")]
+        public string? Fcm {get; set;}
     }
 }

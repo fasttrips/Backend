@@ -33,175 +33,47 @@ namespace RepositoryPattern.Services.AuthService
             _logger = logger;
         }
 
-        public async Task<Object> LoginAsync([FromBody] LoginDto login)
-        {
-            try
-            {
-                var user = await dataUser.Find(u => u.Email == login.Email).FirstOrDefaultAsync();
-                if (user == null)
-                {
-                    throw new CustomException(400, "Email", "Email tidak ditemukan");
-                }
-                bool isPasswordCorrect = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
-                if (!isPasswordCorrect)
-                {
-                    throw new CustomException(400, "Password", "Password Salah");
-                }
-                if (user.IsActive == false)
-                {
-                    throw new CustomException(400, "Message", "Akun anda tidak perbolehkan akses");
-                }
-                if (user.IsVerification == false)
-                {
-                    throw new CustomException(400, "Message", "Akun anda belum aktif, silahkan aktifasi melalui link kami kirimkan di email anda");
-                }
-
-                var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-                var jwtService = new JwtService(configuration);
-                string userId = user.Id;
-                string token = jwtService.GenerateJwtToken(userId);
-                string idAsString = user.Id.ToString();
-                return new { code = 200, id = idAsString, accessToken = token };
-            }
-            catch (CustomException ex)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<object> RegisterAsync([FromBody] RegisterDto data)
-        {
-            try
-            {
-                var user = await dataUser.Find(u => u.Email == data.Email).FirstOrDefaultAsync();
-
-                if (user != null)
-                {
-                    string usersId = user.Id;
-                    string roleId = user.Id.ToString();
-                    var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-                    var jwtServices = new JwtService(config);
-                    string tokens = jwtServices.GenerateJwtToken(usersId);
-                    return new { code = 200, id = roleId, accessToken = tokens };
-                }
-
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(data.Password);
-                var uuid = Guid.NewGuid().ToString();
-
-                var roleData = new User()
-                {
-                    Id = uuid,
-                    Username = data.Username,
-                    FullName = data.FullName,
-                    PhoneNumber = data.PhoneNumber,
-                    Email = data.Email,
-                    Password = hashedPassword,
-                    IsActive = true,
-                    IsVerification = true,
-                    IdRole = Roles.User,
-                    CreatedAt = DateTime.Now,
-                    CodeMeeting= ""
-                };
-
-                await dataUser.InsertOneAsync(roleData);
-                string roleIdAsString = roleData.Id.ToString();
-                var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-                var jwtService = new JwtService(configuration);
-                string userId = roleData.Id;
-                string token = jwtService.GenerateJwtToken(userId);
-
-                return new { code = 200, id = roleIdAsString, accessToken = token };
-            }
-            catch (CustomException ex)
-            {
-
-                throw new CustomException(400, "Error", ex.Message);;
-            }
-        }
-
         public async Task<object> RegisterGoogleAsync([FromBody] string data, RegisterGoogleDto login)
         {
             try
             {
                 var payload = JsonSerializer.Deserialize<JwtPayloads>(data);
+                var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+                var jwtService = new JwtService(configuration);
 
                 var user = await dataUser.Find(u => u.Email == payload.Email).FirstOrDefaultAsync();
 
                 if (user != null)
                 {
-                    throw new CustomException(400, "Email", "Email Sudah digunakan");
+                    string tokens = jwtService.GenerateJwtToken(user.Id.ToString());
+                    return new { code = 200, id = user.Id.ToString(), accessToken = tokens };
                 }
-
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(payload.Audience);
                 var uuid = Guid.NewGuid().ToString();
 
                 var roleData = new User()
                 {
                     Id = uuid,
-                    Username = login.Username,
                     FullName = payload.Name,
-                    PhoneNumber = "",
                     Email = payload.Email,
-                    Password = hashedPassword,
+                    Phone = "",
+                    Fcm= "",
+                    Balance=0,
+                    Point=0,
                     IsActive = true,
                     IsVerification = true,
                     IdRole = Roles.User,
                     CreatedAt = DateTime.Now,
-                    CodeMeeting= ""
                 };
 
                 await dataUser.InsertOneAsync(roleData);
-                string roleIdAsString = roleData.Id.ToString();
 
-                // var email = new EmailForm()
-                // {
-                //     Id = uuid,
-                //     Email = data.Email,
-                //     Subject = "Activation Trasgo",
-                //     Message = "Activation"
-                // };
-                var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-                var jwtService = new JwtService(configuration);
-                string userId = roleData.Id;
-                string token = jwtService.GenerateJwtToken(userId);
-                // var sending = _emailService.SendEmailAsync(email);
-                return new { code = 200, id = roleIdAsString, accessToken = token };
+                string token = jwtService.GenerateJwtToken(roleData.Id);
+                return new { code = 200, id = roleData.Id, accessToken = token };
             }
             catch (CustomException ex)
             {
 
                 throw new CustomException(400, "Error", ex.Message);;
-            }
-        }
-
-        public async Task<object> UpdatePassword(string id, ChangeUserPasswordDto item)
-        {
-            try
-            {
-                var roleData = await dataUser.Find(x => x.Id == id).FirstOrDefaultAsync();
-                bool checkPass = BCrypt.Net.BCrypt.Verify(item.currentPassword, roleData.Password);
-                if (roleData == null)
-                {
-                    throw new CustomException(400, "Error", "Data tidak ada");
-                }
-                if (!checkPass)
-                {
-                    throw new CustomException(400, "Error", "Password tidak sama");
-                }
-                if (item.newPassword.Length < 8)
-                {
-                    throw new CustomException(400, "Password", "Password harus 8 karakter");
-                }
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(item.newPassword);
-                roleData.Password = hashedPassword;
-                await dataUser.ReplaceOneAsync(x => x.Id == id, roleData);
-                return new { code = 200, Message = "Update Password Berhasil" };
-            }
-            catch (CustomException ex)
-            {
-
-                throw;
             }
         }
 
@@ -352,62 +224,6 @@ namespace RepositoryPattern.Services.AuthService
             catch (CustomException ex)
             {
                 throw;
-            }
-        }
-
-         public async Task<Object> CheckStatus([FromBody]string id)
-        {
-            try
-            {
-                var user = await dataUser.Find(u => u.Id == id).FirstOrDefaultAsync();
-                if (user == null)
-                {
-                    throw new CustomException(400, "Email", "Email tidak ditemukan");
-                }
-
-                if(user.CodeMeeting == "")
-                {
-                    return new { code = 200, Status = "Normal", CodeMeetings = user.CodeMeeting };
-                }else{
-                    return new { code = 200, Status = "Pro" , CodeMeetings = user.CodeMeeting};
-                }
-            }
-            catch (CustomException ex)
-            {
-                throw;
-            }
-        }
-
-        public async Task<string> ForgotPasswordAsync(UpdateUserAuthDto dto)
-        {
-            try
-            {
-                var codeOtp = dto.CodeOtp;
-                var newPassword = dto.Password;
-
-                // Cek OTP di database
-                var userOtp = await dataOtp.Find(x => x.CodeOtp.Equals(dto.CodeOtp, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
-
-                if (userOtp == null)
-                    throw new CustomException(400,"Message", "Otp not found");
-
-                // Cari user berdasarkan email dari OTP
-                var roleData = await dataUser.Find(x => x.Email.Equals(userOtp.Email, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
-                if (roleData == null)
-                    throw new CustomException(400,"Message", "User not found");
-
-                // Hash password baru
-                string passwordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-                roleData.Password = passwordHash;
-                await dataUser.ReplaceOneAsync(x => x.Id == roleData.Id, roleData);
-                // Hapus OTP setelah berhasil update password
-                await dataOtp.DeleteOneAsync(o => o.Id == userOtp.Id);
-
-                return "Update Password Successfully";
-            }
-            catch (Exception ex)
-            {
-                throw new CustomException(400,"Message", $"ForgotPassword Error: {ex.Message}");
             }
         }
 
