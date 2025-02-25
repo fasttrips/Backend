@@ -1,23 +1,28 @@
-# Use the official .NET 6 SDK image to build the application
+# Gunakan official .NET SDK 8.0 sebagai build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
+# Set working directory
 WORKDIR /app
 
-# Copy the .csproj and restore as distinct layers
+# Salin .csproj dan restore dependensi
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy the remaining source code and build the application
+# Salin semua kode sumber dan build aplikasi
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o /app/out --no-restore
 
-# Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# Gunakan image runtime .NET 8.0 yang lebih kecil
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
+# Set working directory
 WORKDIR /app
 
-# Copy the published output from the build stage
+# Salin hasil build dari stage sebelumnya
 COPY --from=build /app/out .
 
-# Define the entry point for your application
+# Ekspose port yang digunakan aplikasi
+EXPOSE 8080
+
+# Jalankan aplikasi
 ENTRYPOINT ["dotnet", "BackendTrasgo.dll"]
