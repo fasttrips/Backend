@@ -21,6 +21,9 @@ WORKDIR /app
 # Salin hasil build dari stage sebelumnya
 COPY --from=build /app/out .
 
+# Tentukan variabel lingkungan agar .NET berjalan di port 8080
+ENV ASPNETCORE_URLS=http://+:8080
+
 # Ekspose port yang digunakan aplikasi
 EXPOSE 8080
 
