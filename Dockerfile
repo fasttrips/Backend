@@ -1,31 +1,19 @@
-# Gunakan official .NET SDK 8.0 sebagai build stage
+# Gunakan base image .NET SDK untuk build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-
-# Set working directory
 WORKDIR /app
 
-# Salin .csproj dan restore dependensi
+# Copy csproj dan restore dependencies
 COPY *.csproj ./
 RUN dotnet restore
 
-# Salin semua kode sumber dan build aplikasi
+# Copy seluruh project dan build
 COPY . ./
-RUN dotnet publish -c Release -o /app/out --no-restore
+RUN dotnet publish -c Release -o /out
 
-# Gunakan image runtime .NET 8.0 yang lebih kecil
+# Gunakan base image runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
-
-# Set working directory
 WORKDIR /app
+COPY --from=build /out ./
 
-# Salin hasil build dari stage sebelumnya
-COPY --from=build /app/out .
-
-# Tentukan variabel lingkungan agar .NET berjalan di port 8080
-ENV ASPNETCORE_URLS=http://+:8080
-
-# Ekspose port yang digunakan aplikasi
-EXPOSE 8080
-
-# Jalankan aplikasi
+# Jalankan aplikasi di port 9000
 ENTRYPOINT ["dotnet", "BackendTrasgo.dll"]
