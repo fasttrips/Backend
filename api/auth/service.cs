@@ -168,14 +168,8 @@ namespace RepositoryPattern.Services.AuthService
         {
             try
             {
-                var roleData = await dataUser.Find(x => x.Id == id).FirstOrDefaultAsync();
-                if (roleData == null)
-                {
-                    throw new CustomException(400, "Error", "Data not found");
-                }
-                roleData.IsVerification = true;
-                await dataUser.ReplaceOneAsync(x => x.Id == id, roleData);
-                return new { code = 200, Message = "Email berhasil di verifikasi" };
+                var roleData = await dataUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data not found");
+                return new { code = 200, Id = roleData.Id, Data = roleData };
             }
             catch (CustomException ex)
             {

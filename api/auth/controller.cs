@@ -63,7 +63,7 @@ namespace Trasgo.Server.Controllers
         [Authorize]
         [HttpGet]
         [Route("verifySessions")]
-        public object VerifySessions()
+        public async Task<object> VerifySessionsAsync()
         {
             try
             {
@@ -72,7 +72,10 @@ namespace Trasgo.Server.Controllers
                 {
                     return new CustomException(400, "Error", "Unauthorized");
                 }
-                return new { code = 200, message = "not expired" };
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.Aktifasi(idUser);
+                return data;
             }
             catch (CustomException ex)
             {
