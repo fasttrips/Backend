@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace Trasgo.Server.Controllers
 {
@@ -80,50 +81,64 @@ namespace Trasgo.Server.Controllers
                     throw new CustomException(400, "Message", "File not found");
                 }
 
-                // Batasi ukuran file
+                // Define max file size: 300 MB
                 const long maxFileSize = 300 * 1024 * 1024; // 300 MB
+
+                // Validate file size
                 if (file.Length > maxFileSize)
                 {
                     throw new CustomException(400, "Message", "File size must not exceed 300 MB.");
                 }
 
-                // Mengecilkan ukuran gambar jika file adalah gambar
-                byte[] compressedImage;
-                using (var image = Image.Load(file.OpenReadStream()))
-                {
-                    // Mengurangi kualitas tetapi tetap menjaga resolusi
-                    var encoder = new JpegEncoder
-                    {
-                        Quality = 20 // Sesuaikan dengan target ukuran (0-100)
-                    };
-
-                    using (var ms = new MemoryStream())
-                    {
-                        image.Save(ms, encoder);
-                        compressedImage = ms.ToArray();
-                    }
-                }
-
-                // Simpan ke GridFS
+                // Initialize GridFSBucket
                 var client = new MongoClient(_conf.GetConnectionString("ConnectionURI"));
                 var database = client.GetDatabase("Trasgo");
                 var gridFSBucket = new GridFSBucket(database);
 
+                // Check if file is an image
+                var allowedImageTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+                bool isImage = allowedImageTypes.Contains(file.ContentType);
+
                 ObjectId fileId;
-                using (var stream = new MemoryStream(compressedImage))
+                using (var stream = file.OpenReadStream())
+                using (var memoryStream = new MemoryStream())
                 {
+                    if (isImage)
+                    {
+                        using (var image = Image.Load(file.OpenReadStream()))
+                        {
+                            // Resize image to 50% of original size
+                            image.Mutate(x => x.Resize(image.Width / 2, image.Height / 2));
+                            var encoder = new JpegEncoder
+                            {
+                                Quality = 20 // Sesuaikan dengan target ukuran (0-100)
+                            };
+
+                            // Save compressed image to memoryStream
+                            image.Save(memoryStream, encoder);
+                            memoryStream.Position = 0;
+                        }
+                    }
+                    else
+                    {
+                        // If not an image, copy the original file
+                        await stream.CopyToAsync(memoryStream);
+                        memoryStream.Position = 0;
+                    }
+
+                    // Upload file to GridFS
                     var options = new GridFSUploadOptions
                     {
                         Metadata = new BsonDocument
                 {
                     { "FileName", file.FileName },
-                    { "ContentType", "image/jpeg" },
+                    { "ContentType", file.ContentType },
                     { "UploadedBy", "admin" },
                     { "UploadedAt", DateTime.UtcNow }
                 }
                     };
 
-                    fileId = await gridFSBucket.UploadFromStreamAsync(file.FileName, stream, options);
+                    fileId = await gridFSBucket.UploadFromStreamAsync(file.FileName, memoryStream, options);
                 }
 
                 return Ok(new
@@ -131,7 +146,7 @@ namespace Trasgo.Server.Controllers
                     status = true,
                     message = "File uploaded successfully",
                     fileId = fileId.ToString(),
-                    path = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v1/file/review/{fileId}"
+                    path = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v1/Attachment/Download/{fileId}"
                 });
             }
             catch (CustomException ex)
