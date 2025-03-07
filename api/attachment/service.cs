@@ -5,7 +5,7 @@ namespace RepositoryPattern.Services.AttachmentService
 {
     public class AttachmentService : IAttachmentService
     {
-        private readonly string bucketName = "Trasgo";
+        private readonly string bucketName = "trasgo";
         private readonly IMongoCollection<Attachments> AttachmentLink;
         private readonly IMongoCollection<User> users;
 
@@ -14,7 +14,7 @@ namespace RepositoryPattern.Services.AttachmentService
         public AttachmentService(IConfiguration configuration)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
-            IMongoDatabase database = client.GetDatabase("Trasgo");
+            IMongoDatabase database = client.GetDatabase("trasgo");
             AttachmentLink = database.GetCollection<Attachments>("Attachment");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];
         }

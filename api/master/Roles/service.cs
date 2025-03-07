@@ -11,7 +11,7 @@ namespace RepositoryPattern.Services.RoleService
         public RoleService(IConfiguration configuration)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
-            IMongoDatabase database = client.GetDatabase("Trasgo");
+            IMongoDatabase database = client.GetDatabase("trasgo");
             dataUser = database.GetCollection<Role>("Roles");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];
         }

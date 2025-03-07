@@ -25,7 +25,7 @@ namespace RepositoryPattern.Services.AuthService
         public AuthService(IConfiguration configuration, IEmailService emailService, ILogger<AuthService> logger)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
-            IMongoDatabase database = client.GetDatabase("Trasgo");
+            IMongoDatabase database = client.GetDatabase("trasgo");
             dataUser = database.GetCollection<User>("Users");
             dataOtp = database.GetCollection<OtpModel>("Otps");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];

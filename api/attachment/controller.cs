@@ -23,7 +23,7 @@ namespace Trasgo.Server.Controllers
         public AttachmentController(IConfiguration configuration, IAttachmentService roleService, ConvertJWT convert)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
-            IMongoDatabase database = client.GetDatabase("Trasgo");
+            IMongoDatabase database = client.GetDatabase("trasgo");
             AttachmentLink = database.GetCollection<MediaFile>("MediaFile");
             _IAttachmentService = roleService;
             _errorUtility = new ErrorHandlingUtility();
@@ -39,7 +39,7 @@ namespace Trasgo.Server.Controllers
             try
             {
                 var client = new MongoClient(_conf.GetConnectionString("ConnectionURI"));
-                var database = client.GetDatabase("Trasgo");
+                var database = client.GetDatabase("trasgo");
                 var gridFSBucket = new GridFSBucket(database);
 
                 // Convert fileId to ObjectId
@@ -92,7 +92,7 @@ namespace Trasgo.Server.Controllers
 
                 // Initialize GridFSBucket
                 var client = new MongoClient(_conf.GetConnectionString("ConnectionURI"));
-                var database = client.GetDatabase("Trasgo");
+                var database = client.GetDatabase("trasgo");
                 var gridFSBucket = new GridFSBucket(database);
 
                 // Check if file is an image

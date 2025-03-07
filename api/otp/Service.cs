@@ -11,7 +11,7 @@ namespace RepositoryPattern.Services.OtpService
         public OtpService(IConfiguration configuration, IEmailService mailerService)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
-            var database = client.GetDatabase("Trasgo");
+            var database = client.GetDatabase("trasgo");
             _otpCollection = database.GetCollection<OtpModel>("Otps");
             _mailerService = mailerService;
         }
