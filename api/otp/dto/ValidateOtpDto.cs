@@ -1,5 +1,5 @@
 public class ValidateOtpDto
 {
-    public string Email { get; set; }
-    public string CodeOtp { get; set; }
+    public string phonenumber { get; set; }
+    public string Code { get; set; }
 }

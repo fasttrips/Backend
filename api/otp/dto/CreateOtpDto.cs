@@ -1,7 +1,11 @@
 public class CreateOtpDto
 {
-    public string Email { get; set; }
-    public string TypeOtp { get; set; }
+    public string Phonenumber { get; set; }
+}
+
+public class CreateOtpWaDto
+{
+    public string Phonenumber { get; set; }
 }
 
 public class UpdateUserAuthDto

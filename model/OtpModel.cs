@@ -8,6 +8,8 @@ public class OtpModel
     public string Id { get; set; }
     [BsonElement("Email")]
     public string Email { get; set; }
+    [BsonElement("Phone")]
+    public string Phone { get; set; }
     [BsonElement("CodeOtp")]
     public string CodeOtp { get; set; }
     [BsonElement("TypeOtp")]

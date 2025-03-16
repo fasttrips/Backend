@@ -1,5 +1,8 @@
 public interface IOtpService
 {
-    Task<string> SendOtpAsync(CreateOtpDto dto);
+    Task<string> SendOtp(CreateOtpDto dto);
     Task<string> ValidateOtpAsync(ValidateOtpDto dto);
+
+    Task<string> SendOtpWAAsync(CreateOtpDto dto);
+    Task<string> ValidateOtpWAAsync(ValidateOtpDto dto);
 }
