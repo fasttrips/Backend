@@ -9,6 +9,8 @@ namespace RepositoryPattern.Services.OtpService
     {
         private readonly IMongoCollection<OtpModel> _otpCollection;
         private readonly IEmailService _mailerService;
+        private readonly string AccountSid;
+        private readonly string AuthToken;
 
         public OtpService(IConfiguration configuration, IEmailService mailerService)
         {
@@ -16,6 +18,8 @@ namespace RepositoryPattern.Services.OtpService
             var database = client.GetDatabase("trasgo");
             _otpCollection = database.GetCollection<OtpModel>("Otps");
             _mailerService = mailerService;
+            this.AccountSid = configuration.GetSection("twillio")["AccountSid"];
+            this.AuthToken = configuration.GetSection("twillio")["AuthToken"];
         }
 
         public async Task<string> SendOtpWAAsync(CreateOtpDto dto)
@@ -76,8 +80,8 @@ namespace RepositoryPattern.Services.OtpService
 
         Task<string> IOtpService.SendOtp(CreateOtpDto dto)
         {
-            var accountSid = "AC0a38d8205f1771feba27c37c70d55bdc";
-            var authToken = "9eb7770f0eb5867bcba1c6a869cd7892";
+            var accountSid = AccountSid;
+            var authToken = AuthToken;
             TwilioClient.Init(accountSid, authToken);
 
             var verification = VerificationResource.Create(
@@ -92,8 +96,8 @@ namespace RepositoryPattern.Services.OtpService
 
         public async Task<string> ValidateOtpAsync(ValidateOtpDto dto)
         {
-            var accountSid = "AC0a38d8205f1771feba27c37c70d55bdc";
-            var authToken = "9eb7770f0eb5867bcba1c6a869cd7892";
+            var accountSid = AccountSid;
+            var authToken = AuthToken;
             TwilioClient.Init(accountSid, authToken);
 
             var verificationCheck = VerificationCheckResource.Create(
