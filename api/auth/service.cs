@@ -122,7 +122,6 @@ namespace RepositoryPattern.Services.AuthService
                     Otp = otp
                 };
                 var sending = _emailService.SendEmailAsync(emailForm);
-                roleData.Otp = otp;
                 await dataUser.ReplaceOneAsync(x => x.Email == id, roleData);
                 return new { code = 200, Message = "Berhasil" };
             }
@@ -141,10 +140,6 @@ namespace RepositoryPattern.Services.AuthService
                 if (roleData == null)
                 {
                     throw new CustomException(400, "Error", "Data not found");
-                }
-                if (roleData.Otp != otp.Otp)
-                {
-                    throw new CustomException(400, "Error", "Otp anda salah");
                 }
                 var data = new LoginDto();
                 {
@@ -172,8 +167,12 @@ namespace RepositoryPattern.Services.AuthService
                 var user = new ModelViewUser
                 {
                     Id = roleData.Id,
-                    Phone = roleData.Phone,
-                    FullName = roleData.FullName
+                    FullName = roleData.FullName,
+                    Balance = roleData.Balance,
+                    Point = roleData.Point,
+                    Fcm = roleData.Fcm,
+                    Image = roleData.Image,
+                    Email = roleData.Email,
                 };
                 return new { code = 200, Id = roleData.Id, Data = user };
             }
@@ -249,7 +248,12 @@ namespace RepositoryPattern.Services.AuthService
     public class ModelViewUser
     {
         public string? Id { get; set; }
-        public string? Phone { get; set; }
         public string? FullName { get; set; }
+        public float? Balance {get; set;}
+        public float? Point {get; set;}
+        public string? Fcm {get; set;}
+        public string? Image {get; set;}
+        public string? Email {get; set;}
+
     }
 }

@@ -74,19 +74,19 @@ namespace RepositoryPattern.Services.OtpService
                 var userModel = new User
                 {
                     Id = uuid,
-                    FullName = "Pengguna " + dto.phonenumber,
                     Phone = dto.phonenumber,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
+                    IdRole = "67e4a5739b655dbba418982d",
+                    FullName = "",
                     Email = "",
                     Image = "",
-                    IdRole = "67e4a5739b655dbba418982d",
                     Pin = "",
                     Balance = 0,
                     Point = 0,
                     Fcm = "",
                     IsActive = true,
-                    IsVerification = true
+                    IsVerification = false
                 };
                 await _userCollection.InsertOneAsync(userModel);
             }
