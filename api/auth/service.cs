@@ -166,7 +166,7 @@ namespace RepositoryPattern.Services.AuthService
                 var roleData = await dataUser.Find(x => x.Phone == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data not found");
                 var user = new ModelViewUser
                 {
-                    Id = roleData.Id,
+                    Phone = roleData.Phone,
                     FullName = roleData.FullName,
                     Balance = roleData.Balance,
                     Point = roleData.Point,
@@ -248,6 +248,7 @@ namespace RepositoryPattern.Services.AuthService
     public class ModelViewUser
     {
         public string? Id { get; set; }
+        public string? Phone { get; set; }
         public string? FullName { get; set; }
         public float? Balance {get; set;}
         public float? Point {get; set;}

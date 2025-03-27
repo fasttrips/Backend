@@ -27,6 +27,9 @@ namespace Trasgo.Shared.Models
         [BsonElement("Pin")]
         public string? Pin {get; set;}
 
+        [BsonElement("Otp")]
+        public string? Otp {get; set;}
+
         [BsonElement("Balance")]
         public float? Balance {get; set;}
 
