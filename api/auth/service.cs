@@ -26,8 +26,8 @@ namespace RepositoryPattern.Services.AuthService
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             IMongoDatabase database = client.GetDatabase("trasgo");
-            dataUser = database.GetCollection<User>("Users");
-            dataOtp = database.GetCollection<OtpModel>("Otps");
+            dataUser = database.GetCollection<User>("User");
+            dataOtp = database.GetCollection<OtpModel>("OTP");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];
             _emailService = emailService;
             _logger = logger;
@@ -56,9 +56,9 @@ namespace RepositoryPattern.Services.AuthService
                     FullName = payload.Name,
                     Email = payload.Email,
                     Phone = "",
-                    Fcm= "",
-                    Balance=0,
-                    Point=0,
+                    Fcm = "",
+                    Balance = 0,
+                    Point = 0,
                     IsActive = true,
                     IsVerification = true,
                     IdRole = Roles.User,
@@ -73,7 +73,7 @@ namespace RepositoryPattern.Services.AuthService
             catch (CustomException ex)
             {
 
-                throw new CustomException(400, "Error", ex.Message);;
+                throw new CustomException(400, "Error", ex.Message); ;
             }
         }
 
@@ -168,8 +168,14 @@ namespace RepositoryPattern.Services.AuthService
         {
             try
             {
-                var roleData = await dataUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data not found");
-                return new { code = 200, Id = roleData.Id, Data = roleData };
+                var roleData = await dataUser.Find(x => x.Phone == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data not found");
+                var user = new ModelViewUser
+                {
+                    Id = roleData.Id,
+                    Phone = roleData.Phone,
+                    FullName = roleData.FullName
+                };
+                return new { code = 200, Id = roleData.Id, Data = user };
             }
             catch (CustomException ex)
             {
@@ -230,13 +236,20 @@ namespace RepositoryPattern.Services.AuthService
                 {
                     return "Email Not Found";
                 }
-                throw new CustomException(400,"Message", "Already Registered");
+                throw new CustomException(400, "Message", "Already Registered");
             }
             catch (Exception ex)
             {
 
-                throw new CustomException(400,"Message", $"{ex.Message}");
+                throw new CustomException(400, "Message", $"{ex.Message}");
             }
         }
+    }
+
+    public class ModelViewUser
+    {
+        public string? Id { get; set; }
+        public string? Phone { get; set; }
+        public string? FullName { get; set; }
     }
 }

@@ -1,16 +1,19 @@
 using MongoDB.Driver;
+using Trasgo.Shared.Models;
 
 namespace RepositoryPattern.Services.OtpService
 {
     public class OtpService : IOtpService
     {
         private readonly IMongoCollection<OtpModel> _otpCollection;
+        private readonly IMongoCollection<User> _userCollection;
 
         public OtpService(IConfiguration configuration)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             var database = client.GetDatabase("trasgo");
             _otpCollection = database.GetCollection<OtpModel>("OTP");
+            _userCollection = database.GetCollection<User>("User");
         }
 
         public async Task<string> SendOtpWAAsync(CreateOtpDto dto)
@@ -53,7 +56,7 @@ namespace RepositoryPattern.Services.OtpService
             }
         }
 
-        public async Task<string> ValidateOtpWAAsync(ValidateOtpDto dto)
+        public async Task<object> ValidateOtpWAAsync(ValidateOtpDto dto)
         {
             // Cari OTP berdasarkan email
             var otp = await _otpCollection.Find(o => o.Phone == dto.phonenumber).FirstOrDefaultAsync();
@@ -64,9 +67,36 @@ namespace RepositoryPattern.Services.OtpService
             if (otp.CodeOtp != dto.Code)
                 throw new CustomException(400, "Message", "OTP invalid");
 
+            var users = await _userCollection.Find(o => o.Phone == dto.phonenumber).FirstOrDefaultAsync();
+            var uuid = Guid.NewGuid().ToString();
+            if(users == null)
+            {
+                var userModel = new User
+                {
+                    Id = uuid,
+                    FullName = "Pengguna " + dto.phonenumber,
+                    Phone = dto.phonenumber,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    Email = "",
+                    Image = "",
+                    IdRole = "67e4a5739b655dbba418982d",
+                    Pin = "",
+                    Balance = 0,
+                    Point = 0,
+                    Fcm = "",
+                    IsActive = true,
+                    IsVerification = true
+                };
+                await _userCollection.InsertOneAsync(userModel);
+            }
+
+            var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+            var jwtService = new JwtService(configuration);
             // Hapus OTP setelah validasi
+            string token = jwtService.GenerateJwtToken(dto.phonenumber);
             await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
-            return "OTP valid";
+            return new { code = 200, accessToken = token };
         }
 
         public class EmailForm
