@@ -49,6 +49,12 @@ public class UpdatePinDto
 
 }
 
+public class UpdateProfileDto
+{
+    public string? FullName { get; set; }
+    public string? Email { get; set; }
+}
+
 public class PinDto
 {
     public string? Pin { get; set; }

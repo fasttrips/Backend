@@ -89,12 +89,18 @@ namespace RepositoryPattern.Services.OtpService
                     IsVerification = false
                 };
                 await _userCollection.InsertOneAsync(userModel);
+                var configuration2 = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+                var jwtService2 = new JwtService(configuration2);
+                // Hapus OTP setelah validasi
+                string token2 = jwtService2.GenerateJwtToken(dto.phonenumber, uuid);
+                await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
+                return new { code = 200, accessToken = token2 };
             }
 
             var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
             var jwtService = new JwtService(configuration);
             // Hapus OTP setelah validasi
-            string token = jwtService.GenerateJwtToken(dto.phonenumber);
+            string token = jwtService.GenerateJwtToken(dto.phonenumber, users.Id);
             await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
             return new { code = 200, accessToken = token };
         }

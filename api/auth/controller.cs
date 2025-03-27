@@ -22,43 +22,43 @@ namespace Trasgo.Server.Controllers
 
         }
 
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("googleSign")]
-        public async Task<object> RegisterGoogleAsync([FromBody] RegisterGoogleDto login)
-        {
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jsonToken = handler.ReadToken(login.Token) as JwtSecurityToken;
+        // [AllowAnonymous]
+        // [HttpPost]
+        // [Route("googleSign")]
+        // public async Task<object> RegisterGoogleAsync([FromBody] RegisterGoogleDto login)
+        // {
+        //     try
+        //     {
+        //         var handler = new JwtSecurityTokenHandler();
+        //         var jsonToken = handler.ReadToken(login.Token) as JwtSecurityToken;
 
-                if (jsonToken != null)
-                {
-                    var payloadJson = jsonToken.Payload.SerializeToJson();
-                    var payload = JsonSerializer.Deserialize<JwtPayloads>(payloadJson);
-                    if (payload.Audience == "831730691096-hsuqs4noja9rc5r3c0sbj050q5st4pmq.apps.googleusercontent.com")
-                    {
-                        var response = await _IAuthService.RegisterGoogleAsync(payloadJson, login);
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        throw new CustomException(400, "Token", "Invalid Token");
-                    }
-                }
-                else
-                {
-                    throw new CustomException(400, "Token", "Invalid Token");
-                }
+        //         if (jsonToken != null)
+        //         {
+        //             var payloadJson = jsonToken.Payload.SerializeToJson();
+        //             var payload = JsonSerializer.Deserialize<JwtPayloads>(payloadJson);
+        //             if (payload.Audience == "831730691096-hsuqs4noja9rc5r3c0sbj050q5st4pmq.apps.googleusercontent.com")
+        //             {
+        //                 var response = await _IAuthService.RegisterGoogleAsync(payloadJson, login);
+        //                 return Ok(response);
+        //             }
+        //             else
+        //             {
+        //                 throw new CustomException(400, "Token", "Invalid Token");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             throw new CustomException(400, "Token", "Invalid Token");
+        //         }
 
-            }
-            catch (CustomException ex)
-            {
-                int errorCode = ex.ErrorCode;
-                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
-                return _errorUtility.HandleError(errorCode, errorResponse);
-            }
-        }
+        //     }
+        //     catch (CustomException ex)
+        //     {
+        //         int errorCode = ex.ErrorCode;
+        //         var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+        //         return _errorUtility.HandleError(errorCode, errorResponse);
+        //     }
+        // }
 
         [Authorize]
         [HttpGet]
@@ -75,6 +75,31 @@ namespace Trasgo.Server.Controllers
                 string accessToken = HttpContext.Request.Headers["Authorization"];
                 string idUser = await _ConvertJwt.ConvertString(accessToken);
                 var data = await _IAuthService.Aktifasi(idUser);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("updateProfile")]
+        public async Task<object> UpdateProfile([FromBody] UpdateProfileDto updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateProfile(idUser, updateProfileDto);
                 return data;
             }
             catch (CustomException ex)

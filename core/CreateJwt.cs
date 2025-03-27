@@ -12,15 +12,15 @@ public class JwtService
         this.key = configuration.GetSection("AppSettings")["JwtKey"];
     }
 
-    public string GenerateJwtToken(string id)
+    public string GenerateJwtToken(string id, object uuid)
     {
-        var tokenDescriptor = CreateTokenDescriptor(id);
+        var tokenDescriptor = CreateTokenDescriptor(id, uuid);
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 
-    private SecurityTokenDescriptor CreateTokenDescriptor(string id)
+    private SecurityTokenDescriptor CreateTokenDescriptor(string id, object uuid)
     {
         var keys = Encoding.ASCII.GetBytes(key);
 
@@ -28,7 +28,7 @@ public class JwtService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, id), // NOTE: this will be the "User.Identity.Name" value
+                new Claim(ClaimTypes.Name, uuid?.ToString() ?? string.Empty), // NOTE: this will be the "User.Identity.Name" value
                 new Claim(JwtRegisteredClaimNames.Sub, id),
             }),
             Expires = DateTime.UtcNow.AddDays(30),
