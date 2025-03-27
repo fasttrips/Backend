@@ -14,34 +14,6 @@ namespace Trasgo.Server.Controllers
             _otpService = otpService;
         }
 
-        [HttpPost("send")]
-        public async Task<IActionResult> SendOtp([FromBody] CreateOtpDto dto)
-        {
-            try
-            {
-                var result = await _otpService.SendOtp(dto);
-                return Ok(new { message = result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpPost("validate")]
-        public async Task<IActionResult> ValidateOtp([FromBody] ValidateOtpDto dto)
-        {
-            try
-            {
-                var result = await _otpService.ValidateOtpAsync(dto);
-                return Ok(new { message = result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
         [HttpPost("sendWA")]
         public async Task<IActionResult> SendOtpWA([FromBody] CreateOtpDto dto)
         {

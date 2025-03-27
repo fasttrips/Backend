@@ -1,25 +1,16 @@
 using MongoDB.Driver;
-using SendingEmail;
-using Twilio;
-using Twilio.Rest.Verify.V2.Service;
 
 namespace RepositoryPattern.Services.OtpService
 {
     public class OtpService : IOtpService
     {
         private readonly IMongoCollection<OtpModel> _otpCollection;
-        private readonly IEmailService _mailerService;
-        private readonly string AccountSid;
-        private readonly string AuthToken;
 
-        public OtpService(IConfiguration configuration, IEmailService mailerService)
+        public OtpService(IConfiguration configuration)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             var database = client.GetDatabase("trasgo");
-            _otpCollection = database.GetCollection<OtpModel>("Otps");
-            _mailerService = mailerService;
-            this.AccountSid = configuration.GetSection("twillio")["AccountSid"];
-            this.AuthToken = configuration.GetSection("twillio")["AuthToken"];
+            _otpCollection = database.GetCollection<OtpModel>("OTP");
         }
 
         public async Task<string> SendOtpWAAsync(CreateOtpDto dto)
@@ -76,38 +67,6 @@ namespace RepositoryPattern.Services.OtpService
             // Hapus OTP setelah validasi
             await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
             return "OTP valid";
-        }
-
-        Task<string> IOtpService.SendOtp(CreateOtpDto dto)
-        {
-            var accountSid = AccountSid;
-            var authToken = AuthToken;
-            TwilioClient.Init(accountSid, authToken);
-
-            var verification = VerificationResource.Create(
-                to: dto.Phonenumber,
-                channel: "sms",
-                pathServiceSid: "VAc8f6417c94c3de9696a25585185ec116"
-            );
-
-            Console.WriteLine(verification.Sid);
-            return Task.FromResult("OTP sent to your email");
-        }
-
-        public async Task<string> ValidateOtpAsync(ValidateOtpDto dto)
-        {
-            var accountSid = AccountSid;
-            var authToken = AuthToken;
-            TwilioClient.Init(accountSid, authToken);
-
-            var verificationCheck = VerificationCheckResource.Create(
-                to: dto.phonenumber,
-                code: dto.Code,
-                pathServiceSid: "VAc8f6417c94c3de9696a25585185ec116"
-            );
-
-            Console.WriteLine(verificationCheck.Sid);
-            return "Berhasil";
         }
 
         public class EmailForm
