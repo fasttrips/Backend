@@ -34,5 +34,7 @@ namespace Trasgo.Shared.Models
         public string? Desc { get; set; }
         [BsonElement("Penumpang")]
         public string? Penumpang { get; set; }
+        [BsonElement("Durasi")]
+        public string? Durasi { get; set; }
     }
 }

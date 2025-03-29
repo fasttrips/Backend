@@ -117,14 +117,17 @@ namespace RepositoryPattern.Services.MapsService
                             if (x.Type != null && x.Type.ToLower() == "motor")
                             {
                                 x.Harga = Convert.ToInt32(hargaMotor) + (x.KenaikanHarga ?? 0);
+                                x.Durasi = durationValue?.ToString() ?? string.Empty;
                             }
                             else if (x.Type != null && x.Type.ToLower() == "mobil")
                             {
                                 x.Harga = Convert.ToInt32(hargaMobil) + (x.KenaikanHarga ?? 0);
+                                x.Durasi = durationValue?.ToString() ?? string.Empty;
                             }
                             else if (x.Type != null && x.Type.ToLower() == "taxi")
                             {
                                 x.Harga = Convert.ToInt32(hargaTaxi) + (x.KenaikanHarga ?? 0);
+                                x.Durasi = durationValue?.ToString() ?? string.Empty;
                             }
                             return x;
                         }).ToList(),
