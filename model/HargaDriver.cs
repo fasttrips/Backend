@@ -30,5 +30,9 @@ namespace Trasgo.Shared.Models
         public int? Potongan3 { get; set; }
         [BsonElement("Type")]
         public string? Type { get; set; }
+        [BsonElement("Desc")]
+        public string? Desc { get; set; }
+        [BsonElement("Penumpang")]
+        public string? Penumpang { get; set; }
     }
 }

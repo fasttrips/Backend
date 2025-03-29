@@ -7,7 +7,7 @@ namespace Trasgo.Server.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/v1/otp")]
+    [Route("api/v1/maps")]
     public class MapsController : ControllerBase
     {
         private readonly IMapsService _IMapsService;
