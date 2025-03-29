@@ -12,7 +12,7 @@ namespace RepositoryPattern.Services.RoleService
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             IMongoDatabase database = client.GetDatabase("trasgo");
-            dataUser = database.GetCollection<Role>("Roles");
+            dataUser = database.GetCollection<Role>("Role");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];
         }
         public async Task<Object> Get()

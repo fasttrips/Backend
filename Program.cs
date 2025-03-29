@@ -10,12 +10,18 @@ using RepositoryPattern.Services.OtpService;
 using SendingEmail;
 using RepositoryPattern.Services.AttachmentService;
 using Microsoft.AspNetCore.Http.Features;
+using RepositoryPattern.Services.RoleService;
+using RepositoryPattern.Services.MapsService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IMapsService, MapsService>();
+
+
 builder.Services.AddSingleton<ConvertJWT>();
 builder.Services.AddSingleton<ValidationUserDto>();
 builder.Services.AddSingleton<ValidationAuthDto>();
