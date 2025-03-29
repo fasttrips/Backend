@@ -52,5 +52,53 @@ namespace Trasgo.Server.Controllers
             }
         }
 
+        [HttpPost("getSearchLocation")]
+        public async Task<object> GetSearchLocation([FromBody] CreateDirectionsDto createDirectionsDto)
+        {
+            try
+            {
+                var data = await _IMapsService.GetSearchLocation(createDirectionsDto);
+                return Ok(data);
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [HttpPost("getPlaceLocation")]
+        public async Task<object> GetPlaceLocation([FromBody] CreateDirectionsDto createDirectionsDto)
+        {
+            try
+            {
+                var data = await _IMapsService.GetPlaceLocation(createDirectionsDto);
+                return Ok(data);
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [HttpPost("getAddressFromLatLon")]
+        public async Task<object> GetAddressFromLatLon([FromBody] CreateDirectionsDto createDirectionsDto)
+        {
+            try
+            {
+                var data = await _IMapsService.GetAddressFromLatLon(createDirectionsDto);
+                return Ok(data);
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
     }
 }

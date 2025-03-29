@@ -142,6 +142,168 @@ namespace RepositoryPattern.Services.MapsService
             }
         }
 
+        public async Task<object> GetSearchLocation(CreateDirectionsDto dto)
+        {
+            try
+            {
+                var cekApiKey = await _settingCollection.Find(x => x.Key == "APIKEYmaps").FirstOrDefaultAsync();
+                if (cekApiKey == null)
+                {
+                    return new
+                    {
+                        code = 404,
+                        data = (string)null,
+                        message = "API Key tidak ditemukan"
+                    };
+                }
+
+                using var httpClient = new HttpClient();
+                var url = $"https://maps.googleapis.com/maps/api/place/autocomplete/json?input={Uri.EscapeDataString(dto.NameSearch)}&key={cekApiKey.Value}&components=country:id"; // Restrict ke Indonesia (optional)
+                var response = await httpClient.GetAsync(url);
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = Newtonsoft.Json.Linq.JObject.Parse(result);
+                    var predictions = jsonResponse["predictions"]?.Select(p => new
+                    {
+                        description = p["description"]?.ToString(),
+                        placeId = p["place_id"]?.ToString()
+                    }).Take(10).ToList();
+
+                    return new
+                    {
+                        code = 200,
+                        data = predictions,
+                        message = "Success get location suggestions"
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        code = 500,
+                        message = "Failed to get suggestions",
+                        data = result
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new
+                {
+                    code = 500,
+                    message = ex.Message
+                };
+            }
+        }
+
+        public async Task<object> GetPlaceLocation(CreateDirectionsDto dto)
+        {
+            try
+            {
+                var cekApiKey = await _settingCollection.Find(x => x.Key == "APIKEYmaps").FirstOrDefaultAsync();
+                if (cekApiKey == null)
+                {
+                    return new
+                    {
+                        code = 404,
+                        data = (string)null,
+                        message = "API Key tidak ditemukan"
+                    };
+                }
+
+                using var httpClient = new HttpClient();
+                var url = $"https://maps.googleapis.com/maps/api/place/details/json?place_id={dto.NameSearch}&key={cekApiKey.Value}";
+                var response = await httpClient.GetAsync(url);
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = Newtonsoft.Json.Linq.JObject.Parse(result);
+                    var location = jsonResponse["result"]?["geometry"]?["location"];
+                    var address = jsonResponse["result"]?["formatted_address"]?.ToString();
+
+                    return new
+                    {
+                        code = 200,
+                        data = new
+                        {
+                            address = address,
+                            latitude = location?["lat"]?.ToString(),
+                            longitude = location?["lng"]?.ToString()
+                        },
+                        message = "Success get location detail"
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        code = 500,
+                        message = "Failed to get place details",
+                        data = result
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new
+                {
+                    code = 500,
+                    message = ex.Message
+                };
+            }
+        }
+
+        public async Task<Object> GetAddressFromLatLon(CreateDirectionsDto dto)
+        {
+            try
+            {
+                var cekApiKey = await _settingCollection.Find(x => x.Key == "APIKEYmaps").FirstOrDefaultAsync();
+                if (cekApiKey == null)
+                {
+                    return "API Key tidak ditemukan";
+                }
+
+                using var httpClient = new HttpClient();
+                var url = $"https://maps.googleapis.com/maps/api/geocode/json?latlng={dto.OriginLat},{dto.OriginLon}&key={cekApiKey.Value}";
+                var response = await httpClient.GetAsync(url);
+                var result = await response.Content.ReadAsStringAsync();
+
+                var json = Newtonsoft.Json.Linq.JObject.Parse(result);
+                var status = json["status"]?.ToString();
+
+                if (status == "OK")
+                {
+                    var formattedAddress = json["results"]?[0]?["formatted_address"]?.ToString();
+                    return new
+                    {
+                        code = 200,
+                        data = new
+                        {
+                            address = CleanAddress(formattedAddress ?? string.Empty) ?? "Alamat tidak ditemukan",
+                            latitude = dto.OriginLat,
+                            longitude = dto.OriginLon,
+                        },
+                        message = "Success get location detail"
+                    };
+                }
+                else
+                {
+                    return $"Gagal mendapatkan alamat. Status: {status}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+
+
+
+
         public static List<(double Latitude, double Longitude)> DecodePolyline(string encodedPolyline)
         {
             var polylineChars = encodedPolyline.ToCharArray();

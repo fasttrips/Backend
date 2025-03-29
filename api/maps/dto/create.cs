@@ -10,6 +10,6 @@ public class CreateDirectionsDto
     public float? OriginLon { get; set; }
     public float? DestinationLat { get; set; }
     public float? DestinationLon { get; set; }
-
-
+    public string? NameSearch { get; set; }
+    
 }
