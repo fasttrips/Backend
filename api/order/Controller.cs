@@ -8,10 +8,26 @@ namespace Trasgo.Server.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _OrderService;
+        private readonly ConvertJWT _ConvertJwt;
 
-        public OrderController(IOrderService OrderService)
+        public OrderController(ConvertJWT convert, IOrderService OrderService)
         {
             _OrderService = OrderService;
+            _ConvertJwt = convert;
+        }
+
+        [HttpPost("getRider")]
+        public async Task<IActionResult> GetRider([FromBody] GetOrderDto dto)
+        {
+            try
+            {
+                var result = await _OrderService.GetRider(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("ride")]
@@ -19,7 +35,14 @@ namespace Trasgo.Server.Controllers
         {
             try
             {
-                var result = await _OrderService.OrderRide(dto);
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.OrderRide(dto, idUser);
                 return Ok(result);
             }
             catch (Exception ex)
