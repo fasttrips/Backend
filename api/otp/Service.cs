@@ -19,7 +19,6 @@ namespace RepositoryPattern.Services.OtpService
             _otpCollection = database.GetCollection<OtpModel>("OTP");
             _userCollection = database.GetCollection<User>("User");
             _settingCollection = database.GetCollection<Setting>("Setting");
-
         }
 
         public async Task<string> SendOtpWAAsync(CreateOtpDto dto)
