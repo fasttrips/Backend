@@ -63,35 +63,10 @@ namespace RepositoryPattern.Services.OrderService
             if (currentIndex + 1 >= nearbyDrivers.Count)
                 throw new Exception("Driver tidak ada.");
 
-
             string nextDriverId = nearbyDrivers[orderData.LastDriver == "" ? 0 : currentIndex + 1].Driver;
-
             orderData.LastDriver = nextDriverId;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == dto.idOrder, orderData);
 
-            // if(orderData.LastDriver == "")
-            // {
-            //     var driver = nearbyDrivers.FirstOrDefault();
-            //     orderData.LastDriver = driver.Driver;
-            //     await _OrderCollection.ReplaceOneAsync(x => x.Id == dto.idOrder, orderData);
-
-            //     ////ubah status mjika druver sdng d calling
-            //     var driverOn = await _driverAvailableCollection.Find(otp => otp.Id == driver.Driver).FirstOrDefaultAsync();
-            //     driverOn.OnCall = true;
-            //     await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == driver.Driver, driverOn);
-            // }else{
-            //     var driver = nearbyDrivers.FirstOrDefault();
-            //     orderData.LastDriver = driver.Driver;
-            //     await _OrderCollection.ReplaceOneAsync(x => x.Id == dto.idOrder, orderData);
-            //     // var roleData = new DriverListCancelModel()
-            //     // {
-            //     //     Id = Guid.NewGuid().ToString(),
-            //     //     IdDriver = orderData.LastDriver,
-            //     //     IdOrder = orderData.Id,
-            //     //     CreatedAt = DateTime.Now
-            //     // };
-            //     // await _driverCancelCollection.InsertOneAsync(roleData);
-            // }
             return new { code = 200, message = "Berhasil", data = orderData, driverList = nearbyDrivers };
         }
 
