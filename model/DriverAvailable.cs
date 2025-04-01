@@ -31,13 +31,13 @@ public class DriverAvalibleModel
     public DateTime LastActive { get; set; }
 
     [BsonElement("Plat")]
-    public DateTime Plat { get; set; } 
+    public string Plat { get; set; } 
 
     [BsonElement("Rating")]
-    public DateTime Rating { get; set; }
+    public string Rating { get; set; }
 
     [BsonElement("NamaKendaraan")]
-    public DateTime NamaKendaraan { get; set; }
+    public string NamaKendaraan { get; set; }
 }
 
 public class DriverListCancelModel
