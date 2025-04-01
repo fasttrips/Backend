@@ -17,6 +17,8 @@ namespace RepositoryPattern.Services.AuthService
     {
         private readonly IMongoCollection<User> dataUser;
         private readonly IMongoCollection<OtpModel> dataOtp;
+        private readonly IMongoCollection<DriverAvalibleModel> dataDriverUser;
+
         private readonly IEmailService _emailService;
         private readonly string key;
         private readonly ILogger<AuthService> _logger;
@@ -26,6 +28,7 @@ namespace RepositoryPattern.Services.AuthService
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             IMongoDatabase database = client.GetDatabase("trasgo");
             dataUser = database.GetCollection<User>("User");
+            dataDriverUser = database.GetCollection<DriverAvalibleModel>("DriverListAvailable");
             dataOtp = database.GetCollection<OtpModel>("OTP");
             this.key = configuration.GetSection("AppSettings")["JwtKey"];
             _emailService = emailService;
@@ -160,6 +163,52 @@ namespace RepositoryPattern.Services.AuthService
                 roleData.FullName = item.FullName;
                 roleData.Email = item.Email;
                 await dataUser.ReplaceOneAsync(x => x.Phone == id, roleData);
+                return new { code = 200, Message = "Update Berhasil" };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<object> UpdateUserProfile(string id, UpdateFCMProfileDto item)
+        {
+            try
+            {
+                var roleData = await dataUser.Find(x => x.Phone == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData.Fcm = item.FCM;
+                await dataUser.ReplaceOneAsync(x => x.Phone == id, roleData);
+                return new { code = 200, Message = "Update Berhasil" };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<object> UpdateDriverProfile(string id, DriverAvalibleModelDTO item)
+        {
+            try
+            {
+                var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData.FCM = item.FCM;
+                await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData);
+                return new { code = 200, Message = "Update Berhasil" };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<object> UpdateDriverLocationProfile(string id, DriverAvalibleModelDTO item)
+        {
+            try
+            {
+                var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData.Latitude = item.Latitude;
+                roleData.Longitude = item.Longitude;
+                await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData);
                 return new { code = 200, Message = "Update Berhasil" };
             }
             catch (CustomException ex)

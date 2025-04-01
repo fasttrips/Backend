@@ -55,6 +55,23 @@ public class UpdateProfileDto
     public string? Email { get; set; }
 }
 
+public class UpdateFCMProfileDto
+{
+    public string? FCM { get; set; }
+}
+
+public class DriverAvalibleModelDTO
+{
+    public Service? Service { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public bool? IsActive { get; set; }
+    public bool? IsStandby { get; set; }
+    public bool? OnCall { get; set; }
+    public string FCM { get; set; } 
+    public DateTime LastActive { get; set; } 
+}
+
 public class PinDto
 {
     public string? Pin { get; set; }

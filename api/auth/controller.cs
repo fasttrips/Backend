@@ -109,6 +109,81 @@ namespace Trasgo.Server.Controllers
                 return _errorUtility.HandleError(errorCode, errorResponse);
             }
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("updateFCMUser")]
+        public async Task<object> UpdateUserProfile([FromBody] UpdateFCMProfileDto updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateUserProfile(idUser, updateProfileDto);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("updateFCMDriver")]
+        public async Task<object> UpdateDriverProfile([FromBody] DriverAvalibleModelDTO updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateDriverProfile(idUser, updateProfileDto);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("updateLocationDriver")]
+        public async Task<object> UpdateDriverLocationProfile([FromBody] DriverAvalibleModelDTO updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateDriverLocationProfile(idUser, updateProfileDto);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
     }
 
 }
