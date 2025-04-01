@@ -31,6 +31,13 @@ namespace RepositoryPattern.Services.OrderService
             _iAuthService  = iAuthService;
         }
 
+        public async Task<object> GetOrder(string idUser)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.IsActive == true && otp.IdUser == idUser).ToListAsync();
+
+            return new { code = 200, message = "Berhasil", data = orderData };
+        }
+
         public async Task<object> GetRider(string idOrder)
         {
             var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == idOrder).FirstOrDefaultAsync();

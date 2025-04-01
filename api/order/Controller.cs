@@ -16,6 +16,27 @@ namespace Trasgo.Server.Controllers
             _ConvertJwt = convert;
         }
 
+        [HttpGet("GetOrder")]
+        public async Task<IActionResult> GetOrder()
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.GetOrder(idUser);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("getRider/{idOrder}")]
         public async Task<IActionResult> GetRider([FromRoute] string idOrder)
         {
