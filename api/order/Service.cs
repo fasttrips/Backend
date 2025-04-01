@@ -54,14 +54,24 @@ namespace RepositoryPattern.Services.OrderService
             .OrderBy(d => d.Distance) // Urutkan berdasarkan jarak terdekat
             .ToList();
             var nearbyDrivers = driverWithDistance.Where(d => d.Distance <= 2).ToList();
-            string lastDriverId = orderData.LastDriver == "" ? nearbyDrivers[0].Driver : orderData.LastDriver;
+            string lastDriverId = string.IsNullOrEmpty(orderData.LastDriver) ? (nearbyDrivers[0].Driver ?? string.Empty) : orderData.LastDriver;
 
             int currentIndex = nearbyDrivers.FindIndex(d => d.Driver == lastDriverId);
             if (currentIndex == -1)
-                throw new Exception($"Driver {lastDriverId} tidak ditemukan.");
+            {
+                string nextDriverId2 = nearbyDrivers[0].Driver;
+                orderData.LastDriver = "";
+                await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+                throw new Exception($"Driver tidak adas.");
+            }
 
             if (currentIndex + 1 >= nearbyDrivers.Count)
+            {
+                string nextDriverId2 = nearbyDrivers[0].Driver;
+                orderData.LastDriver = "";
+                await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
                 throw new Exception("Driver tidak ada.");
+            }
 
             string nextDriverId = nearbyDrivers[orderData.LastDriver == "" ? 0 : currentIndex + 1].Driver;
             orderData.LastDriver = nextDriverId;
