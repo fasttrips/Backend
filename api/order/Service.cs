@@ -60,7 +60,6 @@ namespace RepositoryPattern.Services.OrderService
         public async Task<object> CancelOrderByUser(string idOrder)
         {
             var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
-
             orderData.Status = 4;
             orderData.IsDeclinebyUser = true;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
@@ -77,7 +76,7 @@ namespace RepositoryPattern.Services.OrderService
                 SendNotif(notifikasiDriver);
             }
 
-            var User = await _userCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
             {
                 FCM = User.Fcm,
