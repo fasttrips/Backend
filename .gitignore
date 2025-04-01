@@ -38,4 +38,4 @@ wwwroot
 .vscode/launch.json
 .credent
 
-*.firebase-service-account.json
+.firebase-service-account.json
