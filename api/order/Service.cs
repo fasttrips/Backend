@@ -14,6 +14,8 @@ namespace RepositoryPattern.Services.OrderService
         private readonly IMongoCollection<Setting> _settingCollection;
         private readonly IMongoCollection<DriverAvalibleModel> _driverAvailableCollection;
         private readonly IMongoCollection<DriverListCancelModel> _driverCancelCollection;
+        private readonly IMongoCollection<User> _driverData;
+
         private readonly IAuthService _iAuthService;
 
 
@@ -23,19 +25,36 @@ namespace RepositoryPattern.Services.OrderService
             var database = client.GetDatabase("trasgo");
             _OrderCollection = database.GetCollection<OrderModel>("Order");
             _driverAvailableCollection = database.GetCollection<DriverAvalibleModel>("DriverListAvailable");
+            _driverData = database.GetCollection<User>("User");
+
             _driverCancelCollection = database.GetCollection<DriverListCancelModel>("DriverListCancel");
 
             _userCollection = database.GetCollection<User>("User");
             _settingCollection = database.GetCollection<Setting>("Setting");
 
-            _iAuthService  = iAuthService;
+            _iAuthService = iAuthService;
         }
 
         public async Task<object> GetOrder(string idUser)
         {
             var orderData = await _OrderCollection.Find(otp => otp.IsActive == true && otp.IdUser == idUser).ToListAsync();
 
+
+
             return new { code = 200, message = "Berhasil", data = orderData };
+        }
+
+        public async Task<object> GetOrderDetail(string idUser)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idUser).FirstOrDefaultAsync();
+            if (orderData.IdDriver == "")
+            {
+                return new { code = 200, message = "Berhasil", data = orderData, driver = (object)null, locationDriver = (object)null };
+            }
+            var driverData = await _driverData.Find(otp => otp.Phone == orderData.IdDriver).FirstOrDefaultAsync();
+            var locationData = await _driverAvailableCollection.Find(otp => otp.Id == orderData.IdDriver).FirstOrDefaultAsync();
+
+            return new { code = 200, message = "Berhasil", data = orderData, driver = driverData, locationDriver =  locationData};
         }
 
         public async Task<object> GetRider(string idOrder)
@@ -87,7 +106,7 @@ namespace RepositoryPattern.Services.OrderService
             orderData.LastDriver = nextDriverId;
 
             var toNotif = getNearbyDriver.Find(x => x.Id == nextDriverId).FCM;
-            
+
             var notifikasiDriver = new PayloadNotifSend
             {
                 FCM = toNotif,

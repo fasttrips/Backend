@@ -37,6 +37,20 @@ namespace Trasgo.Server.Controllers
             }
         }
 
+        [HttpGet("GetOrder/Detail/{id}")]
+        public async Task<IActionResult> GetOrderDetail([FromRoute]string id)
+        {
+            try
+            {
+                var result = await _OrderService.GetOrderDetail(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("getRider/{idOrder}")]
         public async Task<IActionResult> GetRider([FromRoute] string idOrder)
         {
