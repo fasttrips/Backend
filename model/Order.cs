@@ -64,6 +64,10 @@ public class OrderModel : BaseModel
 
     [BsonElement("LastDriver")]
     public string? LastDriver { get; set; }
+
+    [BsonElement("Coordinates")]
+    public List<Coordinate>? Coordinates { get; set; }
+
 }
 
 public class PendingPaymentModel : BaseModel

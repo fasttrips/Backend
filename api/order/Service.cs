@@ -157,7 +157,8 @@ namespace RepositoryPattern.Services.OrderService
                 Diskon = dto.Diskon,
                 Jarak = dto.Jarak,
                 Payment = dto.Payment,
-                LastDriver = ""
+                LastDriver = "",
+                Coordinates = dto.Coordinates
             };
 
             var getUser = await _userCollection.Find(otp => otp.Phone == idUser).FirstOrDefaultAsync();

@@ -19,6 +19,8 @@ public class CreateOrderDto : BaseModel
     public float? Diskon { get; set; }
     public float? Jarak { get; set; }
     public string? Payment { get; set; }
+    public List<Coordinate>? Coordinates { get; set; }
+
 }
 
 public class GetOrderDto
@@ -36,6 +38,12 @@ public class PickupLocation
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public string? Address { get; set; }
+}
+
+public class Coordinate
+{
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
 }
 
 public class Service
