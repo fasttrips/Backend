@@ -79,7 +79,7 @@ namespace RepositoryPattern.Services.AuthService
         //     }
         // }
 
-        
+
 
         // public async Task<object> RequestOtpEmail(string id)
         // {
@@ -217,6 +217,40 @@ namespace RepositoryPattern.Services.AuthService
             }
         }
 
+        public async Task<object> SendNotif(PayloadNotifSend item)
+        {
+            try
+            {
+                Console.WriteLine("cek");
+                string ServerKey = "AIzaSyDUKDzEbHSUxeI_d0Y8pAkEi8SydSz-TvQ";
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={ServerKey}");
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+                var payload = new
+                {
+                    to = item.FCM,
+                    notification = new
+                    {
+                        title = item.Title,
+                        body = item.Body
+                    },
+                    data = new
+                    {
+                        forceOpen = "true" // Bisa digunakan untuk membuka app otomatis di Android
+                    }
+                };
+                string json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync("https://fcm.googleapis.com/fcm/send", content);
+                string responseString = await response.Content.ReadAsStringAsync();
+                return new { code = 200, Message = "Notification sent successfully", Response = responseString };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<object> Aktifasi(string id)
         {
             try
@@ -246,11 +280,11 @@ namespace RepositoryPattern.Services.AuthService
         public string? Id { get; set; }
         public string? Phone { get; set; }
         public string? FullName { get; set; }
-        public float? Balance {get; set;}
-        public float? Point {get; set;}
-        public string? Fcm {get; set;}
-        public string? Image {get; set;}
-        public string? Email {get; set;}
+        public float? Balance { get; set; }
+        public float? Point { get; set; }
+        public string? Fcm { get; set; }
+        public string? Image { get; set; }
+        public string? Email { get; set; }
 
     }
 }

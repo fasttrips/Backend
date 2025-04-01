@@ -184,6 +184,7 @@ namespace Trasgo.Server.Controllers
                 return _errorUtility.HandleError(errorCode, errorResponse);
             }
         }
+        
     }
 
 }

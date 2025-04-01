@@ -37,3 +37,5 @@ wwwroot
 .fake
 .vscode/launch.json
 .credent
+
+*.firebase-service-account.json

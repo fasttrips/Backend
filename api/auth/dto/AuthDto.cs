@@ -72,6 +72,14 @@ public class DriverAvalibleModelDTO
     public DateTime LastActive { get; set; } 
 }
 
+public class PayloadNotifSend
+{
+    public string FCM { get; set; }
+    public string Title { get; set; }
+    public string Body { get; set; }
+
+}
+
 public class PinDto
 {
     public string? Pin { get; set; }

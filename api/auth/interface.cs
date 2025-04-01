@@ -7,9 +7,5 @@ public interface IAuthService
     Task<Object> UpdateUserProfile(string id, UpdateFCMProfileDto item);
     Task<Object> UpdateDriverProfile(string id, DriverAvalibleModelDTO item);
     Task<Object> UpdateDriverLocationProfile(string id, DriverAvalibleModelDTO item);
-
-
-
-
-
+    Task<Object> SendNotif(PayloadNotifSend payloadNotifSend);
 }

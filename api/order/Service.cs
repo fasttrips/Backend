@@ -2,6 +2,8 @@ using MongoDB.Driver;
 using Trasgo.Shared.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text;
 
 namespace RepositoryPattern.Services.OrderService
 {
@@ -12,11 +14,10 @@ namespace RepositoryPattern.Services.OrderService
         private readonly IMongoCollection<Setting> _settingCollection;
         private readonly IMongoCollection<DriverAvalibleModel> _driverAvailableCollection;
         private readonly IMongoCollection<DriverListCancelModel> _driverCancelCollection;
+        private readonly IAuthService _iAuthService;
 
 
-
-
-        public OrderService(IConfiguration configuration)
+        public OrderService(IConfiguration configuration, IAuthService iAuthService)
         {
             MongoClient client = new MongoClient(configuration.GetConnectionString("ConnectionURI"));
             var database = client.GetDatabase("trasgo");
@@ -26,6 +27,8 @@ namespace RepositoryPattern.Services.OrderService
 
             _userCollection = database.GetCollection<User>("User");
             _settingCollection = database.GetCollection<Setting>("Setting");
+
+            _iAuthService  = iAuthService;
         }
 
         public async Task<object> GetRider(string idOrder)
@@ -75,6 +78,17 @@ namespace RepositoryPattern.Services.OrderService
 
             string nextDriverId = nearbyDrivers[orderData.LastDriver == "" ? 0 : currentIndex + 1].Driver;
             orderData.LastDriver = nextDriverId;
+
+            var toNotif = getNearbyDriver.Find(x => x.Id == nextDriverId).FCM;
+            Console.WriteLine(toNotif);
+            var notifikasi = new PayloadNotifSend
+            {
+                FCM = toNotif,
+                Title = "Hai",
+                Body = "Test"
+            };
+            SendNotif(notifikasi);
+
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
             return new { code = 200, message = "Berhasil", data = orderData, driverList = nearbyDrivers };
@@ -152,6 +166,19 @@ namespace RepositoryPattern.Services.OrderService
             private static double ToRadians(double angle)
             {
                 return Math.PI * angle / 180.0;
+            }
+        }
+
+        public async Task<object> SendNotif(PayloadNotifSend item)
+        {
+            try
+            {
+                string response = await FirebaseService.SendPushNotification(item.FCM, item.Title, item.Body);
+                return new { code = 200, Message = "Notification sent successfully", Response = response };
+            }
+            catch (CustomException ex)
+            {
+                throw;
             }
         }
 
