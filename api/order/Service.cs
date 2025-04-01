@@ -54,16 +54,38 @@ namespace RepositoryPattern.Services.OrderService
             var driverData = await _driverData.Find(otp => otp.Phone == orderData.IdDriver).FirstOrDefaultAsync();
             var locationData = await _driverAvailableCollection.Find(otp => otp.Id == orderData.IdDriver).FirstOrDefaultAsync();
 
-            return new { code = 200, message = "Berhasil", data = orderData, driver = driverData, locationDriver =  locationData};
+            return new { code = 200, message = "Berhasil", data = orderData, driver = driverData, locationDriver = locationData };
         }
 
         public async Task<object> CancelOrderByUser(string idOrder)
         {
             var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+
             orderData.Status = 4;
             orderData.IsDeclinebyUser = true;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
-            return new { code = 200, message = "Order Cancel", data = orderData};
+
+            if (orderData.IdDriver != "")
+            {
+                var Driver = await _driverAvailableCollection.Find(otp => otp.Id == orderData.IdDriver).FirstOrDefaultAsync();
+                var notifikasiDriver = new PayloadNotifSend
+                {
+                    FCM = Driver.FCM,
+                    Title = "Pesanan Di batalkan user",
+                    Body = $"Tenang kami akan carikan yang baru buat kamu"
+                };
+                SendNotif(notifikasiDriver);
+            }
+
+            var User = await _userCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = User.Fcm,
+                Title = "Pesanan Di batalkan",
+                Body = $"Trasgo berkomitment selalu meningkatkan layanan kami"
+            };
+            SendNotif(notifikasiUser);
+            return new { code = 200, message = "Order Cancel", data = orderData };
         }
 
         public async Task<object> GetRider(string idOrder)
