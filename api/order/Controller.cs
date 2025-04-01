@@ -16,12 +16,12 @@ namespace Trasgo.Server.Controllers
             _ConvertJwt = convert;
         }
 
-        [HttpPost("getRider")]
-        public async Task<IActionResult> GetRider([FromBody] GetOrderDto dto)
+        [HttpGet("getRider/{idOrder}")]
+        public async Task<IActionResult> GetRider([FromRoute] string idOrder)
         {
             try
             {
-                var result = await _OrderService.GetRider(dto);
+                var result = await _OrderService.GetRider(idOrder);
                 return Ok(result);
             }
             catch (Exception ex)

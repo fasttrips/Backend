@@ -28,11 +28,11 @@ namespace RepositoryPattern.Services.OrderService
             _settingCollection = database.GetCollection<Setting>("Setting");
         }
 
-        public async Task<object> GetRider(GetOrderDto dto)
+        public async Task<object> GetRider(string idOrder)
         {
-            var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == dto.idOrder).FirstOrDefaultAsync();
+            var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == idOrder).FirstOrDefaultAsync();
 
-            var getCancelNearbyDriver = await _driverCancelCollection.Find(otp => otp.IdOrder == dto.idOrder).ToListAsync();
+            var getCancelNearbyDriver = await _driverCancelCollection.Find(otp => otp.IdOrder == idOrder).ToListAsync();
 
             var getNearbyDriver = await _driverAvailableCollection.Find(otp => otp.IsStandby == true).ToListAsync();
 
@@ -65,7 +65,7 @@ namespace RepositoryPattern.Services.OrderService
 
             string nextDriverId = nearbyDrivers[orderData.LastDriver == "" ? 0 : currentIndex + 1].Driver;
             orderData.LastDriver = nextDriverId;
-            await _OrderCollection.ReplaceOneAsync(x => x.Id == dto.idOrder, orderData);
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
             return new { code = 200, message = "Berhasil", data = orderData, driverList = nearbyDrivers };
         }
