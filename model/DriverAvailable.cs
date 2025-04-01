@@ -28,7 +28,16 @@ public class DriverAvalibleModel
     public string FCM { get; set; } 
 
     [BsonElement("LastActive")]
-    public DateTime LastActive { get; set; } 
+    public DateTime LastActive { get; set; }
+
+    [BsonElement("Plat")]
+    public DateTime Plat { get; set; } 
+
+    [BsonElement("Rating")]
+    public DateTime Rating { get; set; }
+
+    [BsonElement("NamaKendaraan")]
+    public DateTime NamaKendaraan { get; set; }
 }
 
 public class DriverListCancelModel
