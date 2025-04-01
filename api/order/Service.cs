@@ -57,6 +57,15 @@ namespace RepositoryPattern.Services.OrderService
             return new { code = 200, message = "Berhasil", data = orderData, driver = driverData, locationDriver =  locationData};
         }
 
+        public async Task<object> CancelOrderByUser(string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+            orderData.Status = 4;
+            orderData.IsDeclinebyUser = true;
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+            return new { code = 200, message = "Order Cancel", data = orderData};
+        }
+
         public async Task<object> GetRider(string idOrder)
         {
             var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == idOrder).FirstOrDefaultAsync();

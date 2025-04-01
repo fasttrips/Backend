@@ -65,6 +65,20 @@ namespace Trasgo.Server.Controllers
             }
         }
 
+        [HttpGet("cancelOrderByUser/{idOrder}")]
+        public async Task<IActionResult> CancelOrderByUser([FromRoute] string idOrder)
+        {
+            try
+            {
+                var result = await _OrderService.CancelOrderByUser(idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("ride")]
         public async Task<IActionResult> OrderRide([FromBody] CreateOrderDto dto)
         {
