@@ -42,7 +42,7 @@ namespace RepositoryPattern.Services.OrderService
         {
             var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == idOrder).FirstOrDefaultAsync();
 
-            var getUser = await _userCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+            var getUser = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
 
 
             var getCancelNearbyDriver = await _driverCancelCollection.Find(otp => otp.IdOrder == idOrder).ToListAsync();
