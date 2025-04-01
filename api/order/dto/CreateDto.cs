@@ -42,8 +42,8 @@ public class PickupLocation
 
 public class Coordinate
 {
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
+    public double latitude { get; set; }
+    public double longitude { get; set; }
 }
 
 public class Service
