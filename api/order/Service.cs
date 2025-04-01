@@ -42,6 +42,9 @@ namespace RepositoryPattern.Services.OrderService
         {
             var orderData = await _OrderCollection.Find(otp => otp.Status == 0 && otp.IsActive == true && otp.Id == idOrder).FirstOrDefaultAsync();
 
+            var getUser = await _userCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+
+
             var getCancelNearbyDriver = await _driverCancelCollection.Find(otp => otp.IdOrder == idOrder).ToListAsync();
 
             var getNearbyDriver = await _driverAvailableCollection.Find(otp => otp.IsStandby == true).ToListAsync();
@@ -87,14 +90,22 @@ namespace RepositoryPattern.Services.OrderService
             orderData.LastDriver = nextDriverId;
 
             var toNotif = getNearbyDriver.Find(x => x.Id == nextDriverId).FCM;
-            Console.WriteLine(toNotif);
-            var notifikasi = new PayloadNotifSend
+            
+            var notifikasiDriver = new PayloadNotifSend
             {
                 FCM = toNotif,
-                Title = "Hai",
-                Body = "Test"
+                Title = "Ada Pesanan Masuk",
+                Body = $"Terima Pesanan {orderData.Service} Sekarang"
             };
-            SendNotif(notifikasi);
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = getUser.Fcm,
+                Title = "Kami carikan driver terdekat",
+                Body = "Silahkan cek di tab aktifitas untuk melihat transaksi"
+            };
+            SendNotif(notifikasiDriver);
+            SendNotif(notifikasiUser);
+
 
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
