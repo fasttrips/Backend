@@ -121,6 +121,16 @@ namespace RepositoryPattern.Services.OrderService
                 string nextDriverId2 = nearbyDrivers[0].Driver;
                 orderData.LastDriver = "";
                 await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+                ////kirim notif
+                var toNotif2 = getNearbyDriver.Find(x => x.Id == nextDriverId2).FCM;
+                var nDriver1= new PayloadNotifSend
+                {
+                    FCM = toNotif2,
+                    Title = "Ada Pesanan Masuk",
+                    Body = $"Terima Pesanan {orderData.Service} Sekarang"
+                };
+                SendNotif(nDriver1);
                 throw new Exception($"Driver tidak adas.");
             }
 
@@ -129,6 +139,16 @@ namespace RepositoryPattern.Services.OrderService
                 string nextDriverId2 = nearbyDrivers[0].Driver;
                 orderData.LastDriver = "";
                 await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+                ////kirim notif
+                var toNotif2 = getNearbyDriver.Find(x => x.Id == nextDriverId2).FCM;
+                var nDriver1= new PayloadNotifSend
+                {
+                    FCM = toNotif2,
+                    Title = "Ada Pesanan Masuk",
+                    Body = $"Terima Pesanan {orderData.Service} Sekarang"
+                };
+                SendNotif(nDriver1);
                 throw new Exception("Driver tidak ada.");
             }
 
