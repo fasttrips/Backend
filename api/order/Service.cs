@@ -319,7 +319,7 @@ namespace RepositoryPattern.Services.OrderService
 
         public async Task<object> DriverOrder(string idUser)
         {
-            var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser).FirstOrDefaultAsync();
+            var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser && otp.Status < 4).FirstOrDefaultAsync();
             if(orderData == null)
             {
                 return new { code = 200, message = "Order", data = (object)null };
