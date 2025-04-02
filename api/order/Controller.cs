@@ -99,5 +99,110 @@ namespace Trasgo.Server.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("terimaOrder/{idOrder}")]
+        public async Task<IActionResult> TerimaOrder([FromRoute] string idOrder)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.TerimaOrder(idUser, idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("lanjutOrder/{idOrder}")]
+        public async Task<IActionResult> LanjutOrder([FromRoute] string idOrder)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.LanjutkanOrder(idUser, idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("selesaiOrder/{idOrder}")]
+        public async Task<IActionResult> SelesaiOrder([FromRoute] string idOrder)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.SelesaiOrder(idUser, idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("cancelOrder/{idOrder}")]
+        public async Task<IActionResult> CancelOrder([FromRoute] string idOrder)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.CancelOrder(idUser, idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("driverlistOrder/{idOrder}")]
+        public async Task<IActionResult> DriverOrder([FromRoute] string idOrder)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.DriverOrder(idUser, idOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

@@ -226,6 +226,109 @@ namespace RepositoryPattern.Services.OrderService
             return new { code = 200, message = "Berhasil", idOrder = uuid };
         }
 
+        public async Task<object> TerimaOrder(string idUser, string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+            if(orderData.IdDriver != "")
+            {
+                return new { code = 200, message = "Kamu telat mengambil orderan", data = (object)null };
+            }
+            var Driver = await _driverAvailableCollection.Find(otp => otp.Id == idUser).FirstOrDefaultAsync();
+
+            orderData.Status = 1;
+            orderData.IdDriver = idUser;
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = User.Fcm,
+                Title = "Horay driver di temukan",
+                Body = $"Kendaraan {Driver.NamaKendaraan} dengan Plat {Driver.Plat} akan menjemput"
+            };
+            SendNotif(notifikasiUser);
+            return new { code = 200, message = "Order Cancel", data = orderData };
+        }
+
+        public async Task<object> LanjutkanOrder(string idUser, string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+            var Driver = await _driverAvailableCollection.Find(otp => otp.Id == idUser).FirstOrDefaultAsync();
+
+            orderData.Status = 2;
+            orderData.IdDriver = idUser;
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = User.Fcm,
+                Title = "Driver sudah di lokasi",
+                Body = $"Kamu naik Kendaraan {Driver.NamaKendaraan} dengan Plat {Driver.Plat}"
+            };
+            SendNotif(notifikasiUser);
+            return new { code = 200, message = "Order Cancel", data = orderData };
+        }
+
+        public async Task<object> SelesaiOrder(string idUser, string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+            var Driver = await _driverAvailableCollection.Find(otp => otp.Id == idUser).FirstOrDefaultAsync();
+
+            orderData.Status = 3;
+            orderData.IdDriver = idUser;
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = User.Fcm,
+                Title = "Terima kasih",
+                Body = $"Kamu sudah menggunakan layanan kami"
+            };
+            SendNotif(notifikasiUser);
+            return new { code = 200, message = "Order Cancel", data = orderData };
+        }
+
+        public async Task<object> CancelOrder(string idUser, string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
+            var Driver = await _driverAvailableCollection.Find(otp => otp.Id == idUser).FirstOrDefaultAsync();
+
+            orderData.Status = 0;
+            orderData.IdDriver = "";
+            await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
+
+            var userModel = new DriverListCancelModel
+            {
+                IdDriver = idUser,
+                IdOrder = idOrder,
+                CreatedAt = DateTime.Now
+            };
+            await _driverCancelCollection.InsertOneAsync(userModel);
+
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
+            var notifikasiUser = new PayloadNotifSend
+            {
+                FCM = User.Fcm,
+                Title = "Maaf ya driver membatalkan orderan",
+                Body = $"kami sedang menghubungi driver terdekat"
+            };
+            SendNotif(notifikasiUser);
+            return new { code = 200, message = "Order", data = orderData };
+        }
+
+        public async Task<object> DriverOrder(string idUser, string idOrder)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder && otp.IdDriver == idUser).FirstOrDefaultAsync();
+            if(orderData == null)
+            {
+                return new { code = 200, message = "Order", data = (object)null };
+            }
+            var User = await _driverAvailableCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+            return new { code = 200, message = "Order", data = orderData, user = User };
+        }
+
         public class sendForm
         {
             public string? Id { get; set; }
