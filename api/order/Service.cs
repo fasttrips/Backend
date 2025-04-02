@@ -239,6 +239,10 @@ namespace RepositoryPattern.Services.OrderService
             orderData.IdDriver = idUser;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
+            Driver.IsStandby = false;
+            await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == idUser, Driver);
+
+
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
             {
@@ -299,13 +303,8 @@ namespace RepositoryPattern.Services.OrderService
             orderData.IdDriver = "";
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
-            var userModel = new DriverListCancelModel
-            {
-                IdDriver = idUser,
-                IdOrder = idOrder,
-                CreatedAt = DateTime.Now
-            };
-            await _driverCancelCollection.InsertOneAsync(userModel);
+            Driver.IsStandby = true;
+            await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == idUser, Driver);
 
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
