@@ -27,7 +27,7 @@ public class FirebaseService
         }
     }
 
-    public static async Task<string> SendPushNotification(string deviceToken, string title, string body)
+    public static async Task<string> SendPushNotification(string deviceToken, string title, string body, string idOrder)
     {
         InitializeFirebase(); // Pastikan Firebase sudah diinisialisasi
 
@@ -41,7 +41,8 @@ public class FirebaseService
             },
             Data = new Dictionary<string, string>
             {
-                { "forceOpen", "true" } // Bisa digunakan untuk membuka aplikasi otomatis
+                { "forceOpen", "true" }, // Bisa digunakan untuk membuka aplikasi otomatis
+                { "idOrder", idOrder } // Bisa digunakan untuk membuka aplikasi otomatis
             }
         };
 

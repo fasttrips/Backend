@@ -128,7 +128,8 @@ namespace RepositoryPattern.Services.OrderService
                 {
                     FCM = toNotif2,
                     Title = "Ada Pesanan Masuk",
-                    Body = $"Terima Pesanan {orderData.Service} Sekarang"
+                    Body = $"Terima Pesanan {orderData.Service} Sekarang",
+                    IdOrder = orderData.Id
                 };
                 SendNotif(nDriver1);
                 throw new Exception($"Driver tidak adas.");
@@ -146,7 +147,8 @@ namespace RepositoryPattern.Services.OrderService
                 {
                     FCM = toNotif2,
                     Title = "Ada Pesanan Masuk",
-                    Body = $"Terima Pesanan {orderData.Service} Sekarang"
+                    Body = $"Terima Pesanan {orderData.Service} Sekarang",
+                    IdOrder = orderData.Id
                 };
                 SendNotif(nDriver1);
                 throw new Exception("Driver tidak ada.");
@@ -161,7 +163,8 @@ namespace RepositoryPattern.Services.OrderService
             {
                 FCM = toNotif,
                 Title = "Ada Pesanan Masuk",
-                Body = $"Terima Pesanan {orderData.Service} Sekarang"
+                Body = $"Terima Pesanan {orderData.Service} Sekarang",
+                IdOrder = orderData.Id
             };
             SendNotif(notifikasiDriver);
 
@@ -259,7 +262,7 @@ namespace RepositoryPattern.Services.OrderService
         {
             try
             {
-                string response = await FirebaseService.SendPushNotification(item.FCM, item.Title, item.Body);
+                string response = await FirebaseService.SendPushNotification(item.FCM, item.Title, item.Body, item.IdOrder);
                 return new { code = 200, Message = "Notification sent successfully", Response = response };
             }
             catch (CustomException ex)
