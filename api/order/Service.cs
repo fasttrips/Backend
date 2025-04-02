@@ -317,14 +317,14 @@ namespace RepositoryPattern.Services.OrderService
             return new { code = 200, message = "Order", data = orderData };
         }
 
-        public async Task<object> DriverOrder(string idUser, string idOrder)
+        public async Task<object> DriverOrder(string idUser)
         {
-            var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder && otp.IdDriver == idUser).FirstOrDefaultAsync();
+            var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser).FirstOrDefaultAsync();
             if(orderData == null)
             {
                 return new { code = 200, message = "Order", data = (object)null };
             }
-            var User = await _driverAvailableCollection.Find(otp => otp.Id == orderData.IdUser).FirstOrDefaultAsync();
+            var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             return new { code = 200, message = "Order", data = orderData, user = User };
         }
 

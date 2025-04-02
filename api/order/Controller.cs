@@ -184,8 +184,8 @@ namespace Trasgo.Server.Controllers
             }
         }
 
-        [HttpGet("driverlistOrder/{idOrder}")]
-        public async Task<IActionResult> DriverOrder([FromRoute] string idOrder)
+        [HttpGet("driverlistOrder")]
+        public async Task<IActionResult> DriverOrder()
         {
             try
             {
@@ -196,7 +196,7 @@ namespace Trasgo.Server.Controllers
                 }
                 string accessToken = HttpContext.Request.Headers["Authorization"];
                 string idUser = await _ConvertJwt.ConvertString(accessToken);
-                var result = await _OrderService.DriverOrder(idUser, idOrder);
+                var result = await _OrderService.DriverOrder(idUser);
                 return Ok(result);
             }
             catch (Exception ex)
