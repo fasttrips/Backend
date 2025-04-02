@@ -208,6 +208,8 @@ namespace RepositoryPattern.Services.AuthService
                 var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
                 roleData.Latitude = item.Latitude;
                 roleData.Longitude = item.Longitude;
+                roleData.FCM = item.FCM;
+                roleData.LastActive = item.LastActive;
                 await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData);
                 return new { code = 200, Message = "Update Berhasil" };
             }
