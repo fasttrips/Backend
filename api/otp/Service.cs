@@ -75,6 +75,15 @@ namespace RepositoryPattern.Services.OtpService
             }
         }
 
+        ///role
+        ///0 admin
+        ///1 user
+        ///2 drivermotor
+        ///3 drivermobil
+        ///4 mitra makanan
+        ///5 mitra terapis
+        ///6 mitrta rent
+
         public async Task<object> ValidateOtpWAAsync(ValidateOtpDto dto)
         {
             // Cari OTP berdasarkan email
@@ -96,7 +105,7 @@ namespace RepositoryPattern.Services.OtpService
                     Phone = dto.phonenumber,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
-                    IdRole = "67e4a5739b655dbba418982d",
+                    IdRole = "1",
                     FullName = "",
                     Email = "",
                     Image = "",
@@ -113,7 +122,7 @@ namespace RepositoryPattern.Services.OtpService
                 // Hapus OTP setelah validasi
                 string token2 = jwtService2.GenerateJwtToken(dto.phonenumber, uuid);
                 await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
-                return new { code = 200, accessToken = token2 };
+                return new { code = 200, accessToken = token2,IdRole = "1"  };
             }
 
             var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
@@ -121,7 +130,7 @@ namespace RepositoryPattern.Services.OtpService
             // Hapus OTP setelah validasi
             string token = jwtService.GenerateJwtToken(dto.phonenumber, users.Id);
             await _otpCollection.DeleteOneAsync(o => o.Id == otp.Id);
-            return new { code = 200, accessToken = token };
+            return new { code = 200, accessToken = token, IdRole = users.IdRole };
         }
 
         public class sendForm
