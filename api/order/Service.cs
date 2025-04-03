@@ -290,7 +290,7 @@ namespace RepositoryPattern.Services.OrderService
 
             var DriverBalance = await _userCollection.Find(otp => otp.Phone == idUser).FirstOrDefaultAsync();
             DriverBalance.Balance -= orderData.HargaPotonganDriver;
-            await _userCollection.ReplaceOneAsync(x => x.Id == idUser, DriverBalance);
+            await _userCollection.ReplaceOneAsync(x => x.Phone == idUser, DriverBalance);
 
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
