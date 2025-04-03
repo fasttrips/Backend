@@ -74,6 +74,8 @@ namespace RepositoryPattern.Services.OrderService
                     Body = $"Tenang kami akan carikan yang baru buat kamu"
                 };
                 SendNotif(notifikasiDriver);
+                Driver.IsStandby = true;
+                await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == orderData.IdDriver, Driver);
             }
 
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
@@ -283,6 +285,9 @@ namespace RepositoryPattern.Services.OrderService
             orderData.IdDriver = idUser;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
+            Driver.IsStandby = true;
+            await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == idUser, Driver);
+
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
             {
@@ -319,7 +324,7 @@ namespace RepositoryPattern.Services.OrderService
 
         public async Task<object> DriverOrder(string idUser)
         {
-            var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser && otp.Status < 4).FirstOrDefaultAsync();
+            var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser && otp.Status < 3).FirstOrDefaultAsync();
             if(orderData == null)
             {
                 return new { code = 200, message = "Order", data = (object)null };
