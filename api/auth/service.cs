@@ -219,6 +219,34 @@ namespace RepositoryPattern.Services.AuthService
             }
         }
 
+        public async Task<object> UpdateDriverStatusProfile(string id, DriverStatusServe item)
+        {
+            try
+            {
+                var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData.IsStandby = item.IsStandby;
+                await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData);
+                return new { code = 200, Message = "Update Berhasil" };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<object> GetDriverStatusProfile(string id)
+        {
+            try
+            {
+                var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                return new { code = 200, data = roleData };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<object> SendNotif(PayloadNotifSend item)
         {
             try

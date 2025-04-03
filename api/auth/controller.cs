@@ -184,6 +184,56 @@ namespace Trasgo.Server.Controllers
                 return _errorUtility.HandleError(errorCode, errorResponse);
             }
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("updateStatusDriver")]
+        public async Task<object> UpdateDriverStatusProfile([FromBody] DriverStatusServe updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateDriverStatusProfile(idUser, updateProfileDto);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("updateStatusDriver")]
+        public async Task<object> GetDriverStatusProfile()
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.GetDriverStatusProfile(idUser);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
         
     }
 

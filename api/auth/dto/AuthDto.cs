@@ -72,6 +72,11 @@ public class DriverAvalibleModelDTO
     public DateTime LastActive { get; set; } 
 }
 
+public class DriverStatusServe
+{
+    public bool IsStandby { get; set; }  
+}
+
 public class PayloadNotifSend
 {
     public string FCM { get; set; }
