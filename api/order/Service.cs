@@ -225,6 +225,7 @@ namespace RepositoryPattern.Services.OrderService
             };
             SendNotif(notifikasiUser);
             await _OrderCollection.InsertOneAsync(userModel);
+            _ = GetRider(uuid);
             return new { code = 200, message = "Berhasil", idOrder = uuid };
         }
 
