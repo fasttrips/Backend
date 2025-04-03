@@ -288,6 +288,10 @@ namespace RepositoryPattern.Services.OrderService
             Driver.IsStandby = true;
             await _driverAvailableCollection.ReplaceOneAsync(x => x.Id == idUser, Driver);
 
+            var DriverBalance = await _userCollection.Find(otp => otp.Phone == idUser).FirstOrDefaultAsync();
+            DriverBalance.Balance -= orderData.HargaPotonganDriver;
+            await _userCollection.ReplaceOneAsync(x => x.Id == idUser, DriverBalance);
+
             var User = await _userCollection.Find(otp => otp.Phone == orderData.IdUser).FirstOrDefaultAsync();
             var notifikasiUser = new PayloadNotifSend
             {
@@ -296,6 +300,8 @@ namespace RepositoryPattern.Services.OrderService
                 Body = $"Kamu sudah menggunakan layanan kami"
             };
             SendNotif(notifikasiUser);
+
+
             return new { code = 200, message = "Order Cancel", data = orderData };
         }
 
