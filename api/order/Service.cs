@@ -302,6 +302,14 @@ namespace RepositoryPattern.Services.OrderService
             };
             SendNotif(notifikasiUser);
 
+            var notifikasiDriver = new PayloadNotifSend
+            {
+                FCM = Driver.FCM,
+                Title = "Terima kasih",
+                Body = $"Kamu sudah menggunakan layanan kami"
+            };
+            SendNotif(notifikasiDriver);
+
 
             return new { code = 200, message = "Order Cancel", data = orderData };
         }
