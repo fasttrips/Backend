@@ -8,10 +8,12 @@ namespace Trasgo.Server.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _ChatService;
+        private readonly ConvertJWT _ConvertJwt;
 
-        public ChatController(IChatService ChatService)
+        public ChatController(ConvertJWT convert,IChatService ChatService)
         {
             _ChatService = ChatService;
+            _ConvertJwt = convert;
         }
 
         [HttpPost("sendWA")]
@@ -19,7 +21,14 @@ namespace Trasgo.Server.Controllers
         {
             try
             {
-                var result = await _ChatService.SendChatWAAsync(dto);
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _ChatService.SendChatWAAsync(idUser,dto);
                 return Ok(new { message = result });
             }
             catch (Exception ex)

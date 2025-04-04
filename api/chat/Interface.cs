@@ -1,7 +1,7 @@
 public interface IChatService
 {
 
-    Task<object> SendChatWAAsync(CreateChatDto dto);
+    Task<object> SendChatWAAsync(string idUser, CreateChatDto dto);
     Task<object> GetChatWAAsync(GetChatDto dto);
 
 }

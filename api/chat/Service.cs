@@ -9,6 +9,8 @@ namespace RepositoryPattern.Services.ChatService
     {
         private readonly IMongoCollection<ChatModel> _ChatCollection;
         private readonly IMongoCollection<User> _userCollection;
+        private readonly IMongoCollection<DriverAvalibleModel> _driverCollection;
+
         private readonly IMongoCollection<Setting> _settingCollection;
 
 
@@ -19,24 +21,65 @@ namespace RepositoryPattern.Services.ChatService
             _ChatCollection = database.GetCollection<ChatModel>("Chat");
             _userCollection = database.GetCollection<User>("User");
             _settingCollection = database.GetCollection<Setting>("Setting");
+            _driverCollection = database.GetCollection<DriverAvalibleModel>("DriverListAvailable");
+            _userCollection = database.GetCollection<User>("User");
         }
 
-        public async Task<object> SendChatWAAsync(CreateChatDto dto)
+        public async Task<object> SendChatWAAsync(string idUser, CreateChatDto dto)
         {
             try
             {
-                var items = new ChatModel
+                if (idUser == dto.IdUser)
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    IdOrder = dto.IdOrder,
-                    IdUser = dto.IdUser,
-                    IdDriver = dto.IdDriver,
-                    Sender = dto.Sender,
-                    CreatedAt = DateTime.UtcNow,
-                    Message = dto.Message
-                };
-                await _ChatCollection.InsertOneAsync(items);
-                return new { code = 200, data = "Berhasil" };
+                    var items = new ChatModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        IdOrder = dto.IdOrder,
+                        IdUser = dto.IdUser,
+                        IdDriver = dto.IdDriver,
+                        Sender = "User",
+                        CreatedAt = DateTime.UtcNow,
+                        Message = dto.Message
+                    };
+                    await _ChatCollection.InsertOneAsync(items);
+
+                    var Driver = await _driverCollection.Find(otp => otp.Id == dto.IdDriver).FirstOrDefaultAsync();
+                    var DriverDetail = await _userCollection.Find(otp => otp.Phone == dto.IdDriver).FirstOrDefaultAsync();
+
+                    var notifikasiUser = new PayloadNotifSend
+                    {
+                        FCM = Driver.FCM,
+                        Title = "Customer " + DriverDetail.FullName,
+                        Body = dto.Message
+                    };
+                    SendNotif(notifikasiUser);
+
+                    return new { code = 200, data = "Berhasil" };
+                }
+                else
+                {
+                    var items = new ChatModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        IdOrder = dto.IdOrder,
+                        IdUser = dto.IdUser,
+                        IdDriver = dto.IdDriver,
+                        Sender = "Mitra",
+                        CreatedAt = DateTime.UtcNow,
+                        Message = dto.Message
+                    };
+                    await _ChatCollection.InsertOneAsync(items);
+
+                    var User = await _userCollection.Find(otp => otp.Phone == dto.IdUser).FirstOrDefaultAsync();
+                    var notifikasiUser = new PayloadNotifSend
+                    {
+                        FCM = User.Fcm,
+                        Title = "Customer " + User.FullName,
+                        Body = dto.Message
+                    };
+                    SendNotif(notifikasiUser);
+                    return new { code = 200, data = "Berhasil" };
+                }
             }
             catch (System.Exception)
             {
@@ -62,6 +105,19 @@ namespace RepositoryPattern.Services.ChatService
             catch (System.Exception)
             {
 
+                throw;
+            }
+        }
+
+        public async Task<object> SendNotif(PayloadNotifSend item)
+        {
+            try
+            {
+                string response = await FirebaseService.SendPushNotification(item.FCM, item.Title, item.Body, item.IdOrder);
+                return new { code = 200, Message = "Notification sent successfully", Response = response };
+            }
+            catch (CustomException ex)
+            {
                 throw;
             }
         }
