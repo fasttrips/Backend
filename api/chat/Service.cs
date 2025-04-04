@@ -51,7 +51,8 @@ namespace RepositoryPattern.Services.ChatService
                     {
                         FCM = Driver.FCM,
                         Title = "Customer " + DriverDetail.FullName,
-                        Body = dto.Message
+                        Body = dto.Message,
+                        Image = "https://www.w3schools.com/w3images/avatar2.png",
                     };
                     SendNotif(notifikasiUser);
 
@@ -73,11 +74,14 @@ namespace RepositoryPattern.Services.ChatService
                     await _ChatCollection.InsertOneAsync(items);
 
                     var User = await _userCollection.Find(otp => otp.Phone == dto.IdUser).FirstOrDefaultAsync();
+                    var DriverDetail = await _userCollection.Find(otp => otp.Phone == dto.IdDriver).FirstOrDefaultAsync();
+
                     var notifikasiUser = new PayloadNotifSend
                     {
                         FCM = User.Fcm,
                         Title = "Mitra " + User.FullName,
-                        Body = dto.Message
+                        Body = dto.Message,
+                        Image = DriverDetail.Image,
                     };
                     SendNotif(notifikasiUser);
                     return new { code = 200, data = "Berhasil" };
@@ -115,7 +119,7 @@ namespace RepositoryPattern.Services.ChatService
         {
             try
             {
-                string response = await FirebaseService.SendPushNotification(item.FCM, item.Title, item.Body, item.IdOrder);
+                string response = await FirebaseService.SendPushNotification2(item.Image,item.FCM, item.Title, item.Body, item.IdOrder);
                 return new { code = 200, Message = "Notification sent successfully", Response = response };
             }
             catch (CustomException ex)

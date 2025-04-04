@@ -42,7 +42,33 @@ public class FirebaseService
             Data = new Dictionary<string, string>
             {
                 { "forceOpen", "true" }, // Bisa digunakan untuk membuka aplikasi otomatis
-                { "idOrder", idOrder } // Bisa digunakan untuk membuka aplikasi otomatis
+                { "idOrder", idOrder }, // Bisa digunakan untuk membuka aplikasi otomatis
+                { "chat", "true" } // Bisa digunakan untuk membuka aplikasi otomatis
+            }
+        };
+
+        string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+        return response; // Response dari Firebase
+    }
+
+    public static async Task<string> SendPushNotification2(string image,string deviceToken, string title, string body, string idOrder)
+    {
+        InitializeFirebase(); // Pastikan Firebase sudah diinisialisasi
+
+        var message = new Message()
+        {
+            Token = deviceToken,
+            Notification = new Notification()
+            {
+                Title = title,
+                Body = body,
+                ImageUrl = image
+            },
+            Data = new Dictionary<string, string>
+            {
+                { "forceOpen", "true" }, // Bisa digunakan untuk membuka aplikasi otomatis
+                { "idOrder", idOrder }, // Bisa digunakan untuk membuka aplikasi otomatis
+                { "chat", "true" } // Bisa digunakan untuk membuka aplikasi otomatis
             }
         };
 

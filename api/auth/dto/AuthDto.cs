@@ -83,6 +83,8 @@ public class PayloadNotifSend
     public string Title { get; set; }
     public string Body { get; set; }
     public string? IdOrder { get; set; }
+    public string? Image { get; set; }
+
 
 
 }
