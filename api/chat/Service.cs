@@ -40,7 +40,7 @@ namespace RepositoryPattern.Services.ChatService
                         Sender = "User",
                         CreatedAt = DateTime.UtcNow,
                         Message = dto.Message,
-                        Image = "",
+                        Image = dto.Image,
                     };
                     await _ChatCollection.InsertOneAsync(items);
 
@@ -51,8 +51,7 @@ namespace RepositoryPattern.Services.ChatService
                     {
                         FCM = Driver.FCM,
                         Title = "Customer " + DriverDetail.FullName,
-                        Body = dto.Message,
-                        Image = "https://www.w3schools.com/w3images/avatar2.png",
+                        Body = dto.Message
                     };
                     SendNotif(notifikasiUser);
 
@@ -69,7 +68,7 @@ namespace RepositoryPattern.Services.ChatService
                         Sender = "Mitra",
                         CreatedAt = DateTime.UtcNow,
                         Message = dto.Message,
-                        Image = "",
+                        Image = dto.Image,
                     };
                     await _ChatCollection.InsertOneAsync(items);
 
@@ -80,8 +79,7 @@ namespace RepositoryPattern.Services.ChatService
                     {
                         FCM = User.Fcm,
                         Title = "Trasgo " + DriverDetail.FullName,
-                        Body = dto.Message,
-                        Image = DriverDetail.Image,
+                        Body = dto.Message
                     };
                     SendNotif(notifikasiUser);
                     return new { code = 200, data = "Berhasil" };

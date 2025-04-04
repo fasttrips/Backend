@@ -4,6 +4,7 @@ public class CreateChatDto
     public string? IdUser { get; set; }
     public string? IdDriver { get; set; }
     public string? Message { get; set; }
+    public string? Image { get; set; }
 
 }
 
