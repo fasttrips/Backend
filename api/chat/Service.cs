@@ -39,7 +39,8 @@ namespace RepositoryPattern.Services.ChatService
                         IdDriver = dto.IdDriver,
                         Sender = "User",
                         CreatedAt = DateTime.UtcNow,
-                        Message = dto.Message
+                        Message = dto.Message,
+                        Image = "",
                     };
                     await _ChatCollection.InsertOneAsync(items);
 

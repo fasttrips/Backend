@@ -20,4 +20,6 @@ public class ChatModel : BaseModel
 
     [BsonElement("Message")]
     public string? Message { get; set; }
+    [BsonElement("Image")]
+    public string? Image { get; set; }
 }
