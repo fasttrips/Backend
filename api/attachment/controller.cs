@@ -111,7 +111,7 @@ namespace Trasgo.Server.Controllers
                             image.Mutate(x => x.Resize(image.Width / 2, image.Height / 2));
                             var encoder = new JpegEncoder
                             {
-                                Quality = 20 // Sesuaikan dengan target ukuran (0-100)
+                                Quality = 50 // Sesuaikan dengan target ukuran (0-100)
                             };
 
                             // Save compressed image to memoryStream
