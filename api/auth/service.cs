@@ -239,6 +239,13 @@ namespace RepositoryPattern.Services.AuthService
             try
             {
                 var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                var itemdriver = await dataUser.Find(x=> x.Phone == roleData.Id).FirstOrDefaultAsync();
+                if( itemdriver.Balance < 0 )
+                {
+                    roleData.IsStandby = false;
+                    dataDriverUser.ReplaceOne(x => x.Id == id, roleData);
+                    return new { code = 400, data = roleData };
+                }
                 return new { code = 200, data = roleData };
             }
             catch (CustomException ex)
@@ -251,7 +258,6 @@ namespace RepositoryPattern.Services.AuthService
         {
             try
             {
-                Console.WriteLine("cek");
                 string ServerKey = "AIzaSyDUKDzEbHSUxeI_d0Y8pAkEi8SydSz-TvQ";
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={ServerKey}");
