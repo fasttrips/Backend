@@ -146,7 +146,7 @@ namespace Trasgo.Server.Controllers
                     status = true,
                     message = "File uploaded successfully",
                     fileId = fileId.ToString(),
-                    path = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v1/Attachment/Download/{fileId}"
+                    path = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v1/file/review/{fileId}"
                 });
             }
             catch (CustomException ex)
