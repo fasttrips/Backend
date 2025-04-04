@@ -45,7 +45,7 @@ namespace RepositoryPattern.Services.ChatService
                     await _ChatCollection.InsertOneAsync(items);
 
                     var Driver = await _driverCollection.Find(otp => otp.Id == dto.IdDriver).FirstOrDefaultAsync();
-                    var DriverDetail = await _userCollection.Find(otp => otp.Phone == dto.IdDriver).FirstOrDefaultAsync();
+                    var DriverDetail = await _userCollection.Find(otp => otp.Phone == dto.IdUser).FirstOrDefaultAsync();
 
                     var notifikasiUser = new PayloadNotifSend
                     {
@@ -79,7 +79,7 @@ namespace RepositoryPattern.Services.ChatService
                     var notifikasiUser = new PayloadNotifSend
                     {
                         FCM = User.Fcm,
-                        Title = "Mitra " + User.FullName,
+                        Title = "Trasgo" + DriverDetail.FullName,
                         Body = dto.Message,
                         Image = DriverDetail.Image,
                     };
