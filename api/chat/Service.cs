@@ -67,7 +67,8 @@ namespace RepositoryPattern.Services.ChatService
                         IdDriver = dto.IdDriver,
                         Sender = "Mitra",
                         CreatedAt = DateTime.UtcNow,
-                        Message = dto.Message
+                        Message = dto.Message,
+                        Image = "",
                     };
                     await _ChatCollection.InsertOneAsync(items);
 
@@ -75,7 +76,7 @@ namespace RepositoryPattern.Services.ChatService
                     var notifikasiUser = new PayloadNotifSend
                     {
                         FCM = User.Fcm,
-                        Title = "Customer " + User.FullName,
+                        Title = "Mitra " + User.FullName,
                         Body = dto.Message
                     };
                     SendNotif(notifikasiUser);
