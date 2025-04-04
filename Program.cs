@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http.Features;
 using RepositoryPattern.Services.RoleService;
 using RepositoryPattern.Services.MapsService;
 using RepositoryPattern.Services.OrderService;
+using RepositoryPattern.Services.ChatService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,8 @@ builder.Services.AddScoped<IAttachmentService, AttachmentService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMapsService, MapsService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
 
 
 
