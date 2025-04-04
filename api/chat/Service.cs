@@ -79,7 +79,7 @@ namespace RepositoryPattern.Services.ChatService
                     var notifikasiUser = new PayloadNotifSend
                     {
                         FCM = User.Fcm,
-                        Title = "Trasgo" + DriverDetail.FullName,
+                        Title = "Trasgo " + DriverDetail.FullName,
                         Body = dto.Message,
                         Image = DriverDetail.Image,
                     };
