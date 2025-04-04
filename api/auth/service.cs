@@ -244,9 +244,9 @@ namespace RepositoryPattern.Services.AuthService
                 {
                     roleData.IsStandby = false;
                     dataDriverUser.ReplaceOne(x => x.Id == id, roleData);
-                    return new { code = 400, data = roleData };
+                    return new { code = 400, status = roleData, data = itemdriver };
                 }
-                return new { code = 200, data = roleData };
+                return new { code = 200, status = roleData, data = itemdriver };
             }
             catch (CustomException ex)
             {
