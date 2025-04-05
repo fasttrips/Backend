@@ -335,6 +335,15 @@ namespace RepositoryPattern.Services.OrderService
                 Body = $"kami sedang menghubungi driver terdekat"
             };
             SendNotif(notifikasiUser);
+
+            await _driverCancelCollection.InsertOneAsync(new DriverListCancelModel
+            {
+                Id = Guid.NewGuid().ToString(),
+                IdDriver = idUser,
+                IdOrder = idOrder,
+                CreatedAt = DateTime.UtcNow
+            });
+            
             return new { code = 200, message = "Order", data = orderData };
         }
 
