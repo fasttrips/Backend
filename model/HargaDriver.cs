@@ -36,5 +36,7 @@ namespace Trasgo.Shared.Models
         public string? Penumpang { get; set; }
         [BsonElement("Durasi")]
         public string? Durasi { get; set; }
+        [BsonElement("IsHemat")]
+        public bool? IsHemat { get; set; }
     }
 }
