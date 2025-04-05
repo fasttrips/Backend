@@ -38,5 +38,7 @@ namespace Trasgo.Shared.Models
         public string? Durasi { get; set; }
         [BsonElement("IsHemat")]
         public bool? IsHemat { get; set; }
+        [BsonElement("IsPremium")]
+        public bool? IsPremium { get; set; }
     }
 }
