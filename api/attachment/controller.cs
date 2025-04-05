@@ -6,6 +6,8 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 
 namespace Trasgo.Server.Controllers
@@ -109,13 +111,30 @@ namespace Trasgo.Server.Controllers
                         {
                             // Resize image to 50% of original size
                             image.Mutate(x => x.Resize(image.Width / 2, image.Height / 2));
-                            var encoder = new JpegEncoder
+                            if (file.ContentType == "image/png")
                             {
-                                Quality = 50 // Sesuaikan dengan target ukuran (0-100)
-                            };
-
-                            // Save compressed image to memoryStream
-                            image.Save(memoryStream, encoder);
+                                var pngEncoder = new PngEncoder
+                                {
+                                    CompressionLevel = PngCompressionLevel.BestCompression
+                                };
+                                image.Save(memoryStream, pngEncoder);
+                            }
+                            else if (file.ContentType == "image/webp")
+                            {
+                                var webpEncoder = new WebpEncoder
+                                {
+                                    Quality = 50
+                                };
+                                image.Save(memoryStream, webpEncoder);
+                            }
+                            else
+                            {
+                                var jpegEncoder = new JpegEncoder
+                                {
+                                    Quality = 50
+                                };
+                                image.Save(memoryStream, jpegEncoder);
+                            }
                             memoryStream.Position = 0;
                         }
                     }
