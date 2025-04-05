@@ -240,6 +240,7 @@ namespace RepositoryPattern.Services.OrderService
 
             orderData.Status = 1;
             orderData.IdDriver = idUser;
+            orderData.UpdatedAt = DateTime.UtcNow;
             await _OrderCollection.ReplaceOneAsync(x => x.Id == idOrder, orderData);
 
             Driver.IsStandby = false;
