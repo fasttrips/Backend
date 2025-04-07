@@ -95,7 +95,10 @@ namespace RepositoryPattern.Services.OrderService
 
             var getCancelNearbyDriver = await _driverCancelCollection.Find(otp => otp.IdOrder == idOrder).ToListAsync();
 
-            var getNearbyDriver = await _driverAvailableCollection.Find(otp => otp.IsStandby == true).ToListAsync();
+            var getNearbyDriver = await _driverAvailableCollection
+                .Find(otp => otp.IsStandby == true && otp.Service.Contains(orderData.Service))
+                .ToListAsync();
+
 
             var filteredNearbyDriver = getNearbyDriver
             .Where(driver => !getCancelNearbyDriver.Any(cancelled => cancelled.IdDriver == driver.Id))
@@ -126,7 +129,7 @@ namespace RepositoryPattern.Services.OrderService
 
                 ////kirim notif
                 var toNotif2 = getNearbyDriver.Find(x => x.Id == nextDriverId2).FCM;
-                var nDriver1= new PayloadNotifSend
+                var nDriver1 = new PayloadNotifSend
                 {
                     FCM = toNotif2,
                     Title = "Ada Pesanan Masuk",
@@ -145,7 +148,7 @@ namespace RepositoryPattern.Services.OrderService
 
                 ////kirim notif
                 var toNotif2 = getNearbyDriver.Find(x => x.Id == nextDriverId2).FCM;
-                var nDriver1= new PayloadNotifSend
+                var nDriver1 = new PayloadNotifSend
                 {
                     FCM = toNotif2,
                     Title = "Ada Pesanan Masuk",
@@ -232,7 +235,7 @@ namespace RepositoryPattern.Services.OrderService
         public async Task<object> TerimaOrder(string idUser, string idOrder)
         {
             var orderData = await _OrderCollection.Find(otp => otp.Id == idOrder).FirstOrDefaultAsync();
-            if(orderData.IdDriver != "")
+            if (orderData.IdDriver != "")
             {
                 return new { code = 200, message = "Kamu telat mengambil orderan", data = (object)null };
             }
@@ -343,14 +346,14 @@ namespace RepositoryPattern.Services.OrderService
                 IdOrder = idOrder,
                 CreatedAt = DateTime.UtcNow
             });
-            
+
             return new { code = 200, message = "Order", data = orderData };
         }
 
         public async Task<object> DriverOrder(string idUser)
         {
             var orderData = await _OrderCollection.Find(otp => otp.IdDriver == idUser && otp.Status < 3).FirstOrDefaultAsync();
-            if(orderData == null)
+            if (orderData == null)
             {
                 return new { code = 200, message = "Order", data = (object)null };
             }
