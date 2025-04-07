@@ -37,6 +37,27 @@ namespace Trasgo.Server.Controllers
             }
         }
 
+        [HttpGet("GetOrderDriver")]
+        public async Task<IActionResult> GetOrderDriver()
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return Unauthorized(new { code = 400, error = "Error", message = "Unauthorized" });
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var result = await _OrderService.GetOrderDriver(idUser);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("GetOrder/Detail/{id}")]
         public async Task<IActionResult> GetOrderDetail([FromRoute]string id)
         {

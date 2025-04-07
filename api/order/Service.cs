@@ -38,9 +38,12 @@ namespace RepositoryPattern.Services.OrderService
         public async Task<object> GetOrder(string idUser)
         {
             var orderData = await _OrderCollection.Find(otp => otp.IsActive == true && otp.IdUser == idUser).ToListAsync();
+            return new { code = 200, message = "Berhasil", data = orderData };
+        }
 
-
-
+        public async Task<object> GetOrderDriver(string idUser)
+        {
+            var orderData = await _OrderCollection.Find(otp => otp.IsActive == true && otp.IdDriver == idUser).ToListAsync();
             return new { code = 200, message = "Berhasil", data = orderData };
         }
 
