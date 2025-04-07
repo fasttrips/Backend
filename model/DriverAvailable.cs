@@ -9,7 +9,7 @@ public class DriverAvalibleModel
     public string Id { get; set; }
 
     [BsonElement("Service")]
-    public Service? Service { get; set; }
+    public List<string>? Service { get; set; }
 
     [BsonElement("Latitude")]
     public double? Latitude { get; set; }
