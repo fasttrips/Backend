@@ -211,6 +211,31 @@ namespace Trasgo.Server.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        [Route("updateServiceDriver")]
+        public async Task<object> updateServiceDriver([FromBody] DriverServiceServe updateProfileDto)
+        {
+            try
+            {
+                var claims = User.Claims;
+                if (claims == null)
+                {
+                    return new CustomException(400, "Error", "Unauthorized");
+                }
+                string accessToken = HttpContext.Request.Headers["Authorization"];
+                string idUser = await _ConvertJwt.ConvertString(accessToken);
+                var data = await _IAuthService.UpdateServiceDriver(idUser, updateProfileDto);
+                return data;
+            }
+            catch (CustomException ex)
+            {
+                int errorCode = ex.ErrorCode;
+                var errorResponse = new ErrorResponse(errorCode, ex.ErrorHeader, ex.Message);
+                return _errorUtility.HandleError(errorCode, errorResponse);
+            }
+        }
+
+        [Authorize]
         [HttpGet]
         [Route("updateStatusDriver")]
         public async Task<object> GetDriverStatusProfile()

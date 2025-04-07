@@ -234,6 +234,25 @@ namespace RepositoryPattern.Services.AuthService
             }
         }
 
+        public async Task<object> UpdateServiceDriver(string id, DriverServiceServe item)
+        {
+            try
+            {
+                var roleData = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData.Service = [];
+                await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData);
+
+                var roleData2 = await dataDriverUser.Find(x => x.Id == id).FirstOrDefaultAsync() ?? throw new CustomException(400, "Error", "Data tidak ada");
+                roleData2.Service = item.Service;
+                await dataDriverUser.ReplaceOneAsync(x => x.Id == id, roleData2);
+                return new { code = 200, Message = "Update Berhasil" };
+            }
+            catch (CustomException ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<object> GetDriverStatusProfile(string id)
         {
             try

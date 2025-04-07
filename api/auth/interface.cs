@@ -8,6 +8,8 @@ public interface IAuthService
     Task<Object> UpdateDriverProfile(string id, DriverAvalibleModelDTO item);
     Task<Object> UpdateDriverLocationProfile(string id, DriverAvalibleModelDTO item);
     Task<Object> UpdateDriverStatusProfile(string id, DriverStatusServe item);
+    Task<Object> UpdateServiceDriver(string id, DriverServiceServe item);
+
     Task<Object> GetDriverStatusProfile(string id);
 
 

@@ -77,6 +77,11 @@ public class DriverStatusServe
     public bool IsStandby { get; set; }  
 }
 
+public class DriverServiceServe
+{
+    public List<string> Service { get; set; }  
+}
+
 public class PayloadNotifSend
 {
     public string FCM { get; set; }
