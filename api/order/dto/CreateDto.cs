@@ -4,6 +4,7 @@ public class CreateOrderDto : BaseModel
 {
     public PickupLocation? PickupLocation { get; set; }
     public DestinationLocation? DestinationLocation { get; set; }
+    public List<OrderFood>? Makanan { get; set; }
     public string? IdDriver { get; set; }
     public string? IdMitra { get; set; }
     public string? IdUser { get; set; }

@@ -14,6 +14,9 @@ public class OrderModel : BaseModel
     [BsonElement("DestinationLocation")]
     public DestinationLocation? DestinationLocation { get; set; }
 
+    [BsonElement("Makanan")]
+    public List<OrderFood>? Makanan { get; set; }
+
     [BsonElement("IdDriver")]
     public string? IdDriver { get; set; }
 

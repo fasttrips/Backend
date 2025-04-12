@@ -14,6 +14,7 @@ using RepositoryPattern.Services.RoleService;
 using RepositoryPattern.Services.MapsService;
 using RepositoryPattern.Services.OrderService;
 using RepositoryPattern.Services.ChatService;
+using RepositoryPattern.Services.TrasFoodService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,9 +26,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMapsService, MapsService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IChatService, ChatService>();
-
-
-
+builder.Services.AddScoped<ITrasFoodService, TrasFoodService>();
 
 builder.Services.AddSingleton<ConvertJWT>();
 builder.Services.AddSingleton<ValidationUserDto>();

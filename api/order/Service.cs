@@ -206,6 +206,7 @@ namespace RepositoryPattern.Services.OrderService
                     Longitude = dto.DestinationLocation.Longitude,
                     Address = dto.DestinationLocation.Address
                 },
+                Makanan = null,
                 Status = dto.Status,
                 Service = dto.Service,
                 IsDeclinebyUser = null,
